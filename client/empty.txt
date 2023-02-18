@@ -1,0 +1,25 @@
+const [state, setState] = useState({
+        username: "",
+        password: "",
+    });
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        console.log({
+            email: data.get("email"),
+            password: data.get("password"),
+        });
+    };
+
+    const handleChange = (event) => {
+        event.preventDefault();
+        setState({
+            ... state,
+            [event.target.name]: event.target.value,
+        });
+    }
+
+    const newUserHandle = (event) => {
+        event.preventDefault();
+        setNewUser(true);
+    }
