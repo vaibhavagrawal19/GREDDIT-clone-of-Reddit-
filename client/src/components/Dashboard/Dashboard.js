@@ -30,19 +30,6 @@ import { Navigate, useNavigate } from "react-router-dom";
 
 import { useState } from "react";
 
-function Copyright(props) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit">
-                GREDDIIT
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
-
 const drawerWidth = 240;
 
 const AppBar = styled(MuiAppBar, {
@@ -236,11 +223,10 @@ function DashboardContent({ userDetails, setUserDetails }) {
                                         height: 500,
                                     }}
                                 >
-                                    {/* <SocialConnect userDetails={userDetails} /> */}
+                                    <SocialConnect userDetails={userDetails} />
                                 </Paper>
                             </Grid>
                         </Grid>
-                        <Copyright sx={{ pt: 4 }} />
                     </Container>
                 </Box>
             </Box>

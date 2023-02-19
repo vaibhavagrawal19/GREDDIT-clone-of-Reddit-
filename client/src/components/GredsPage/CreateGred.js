@@ -23,7 +23,8 @@ import { NoEncryption } from '@mui/icons-material';
 import { useNavigate } from "react-router";
 import Diversity2Icon from '@mui/icons-material/Diversity2';
 
-export default function CreateGred({ userDetails, myGredDetails, setMyGredDetails }) {
+export default function CreateGred({ userDetails, myGredDetails, setMyGredDetails, setOpenForm }) {
+    const [buttonEnable, setButtonEnable] = useState(true);
     const [state, setState] = useState({
         name: "",
         desc: "",
@@ -31,6 +32,7 @@ export default function CreateGred({ userDetails, myGredDetails, setMyGredDetail
         tags: "",
     });
     function handleSubmit(event) {
+        setButtonEnable(false);
         event.preventDefault();
         let bannedWords = state.bannedWords.split(",");
         let tags = state.tags.split(",");
@@ -50,14 +52,20 @@ export default function CreateGred({ userDetails, myGredDetails, setMyGredDetail
             .then(
                 (res) => {
                     if (res.ok) {
-                        let myGredDetails_ = myGredDetails;
-                        myGredDetails_.push({
-                            title: state.name,
-                            desc: state.desc,
-                            bannedWords,
-                            tags,
-                        });
-                        setMyGredDetails(myGredDetails_);
+                        res.json().then((body) => {
+                            console.log(body);
+                            let myGredDetails_ = myGredDetails;
+                            myGredDetails_.push({
+                                _id: body._id,
+                                title: state.name,
+                                desc: state.desc,
+                                bannedWords,
+                                tags,
+                            });
+                            setMyGredDetails(myGredDetails_);
+                            setOpenForm(false);
+                            setButtonEnable(true);
+                        })
                     }
                     else {
                         console.log(res);
@@ -160,6 +168,7 @@ export default function CreateGred({ userDetails, myGredDetails, setMyGredDetail
                                 autoComplete="tags"
                             />
                             <Button
+                                disabled={!buttonEnable}
                                 onClick={handleSubmit}
                                 type="submit"
                                 fullWidth

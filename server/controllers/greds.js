@@ -38,7 +38,29 @@ const createNewGred = asyncHandler(async (req, res) => {
     userObj.subGreds.push(gred._id);
     await userObj.save();
 
-    return res.status(201).json({ id: gred._id });
+    return res.status(201).json({ _id: gred._id });
+});
+
+const deleteGred = asyncHandler(async (req, res) => {
+    const id = req.get("id");
+    const user = req.get("user");
+    if (!id || !user ) {
+        return res.status(400).json({ message: "InCompleteInfo" });
+    }
+
+    await Gred.findByIdAndDelete(id).lean().exec();
+
+    const userObj = await User.findById(user).exec();
+    // console.log(userObj.subGreds);
+    for (let i = 0; i < userObj.subGreds.length; i++) {
+        if (String(userObj.subGreds[i]._id) === id) {
+            userObj.subGreds.splice(i, 1);
+            break;
+        }
+    }
+
+    await userObj.save();
+    return res.status(204).json({ message: "Success!" });
 });
 
 const list = asyncHandler(async (req, res) => {
@@ -61,5 +83,6 @@ const list = asyncHandler(async (req, res) => {
 module.exports = {
     getAllGreds,
     createNewGred,
+    deleteGred,
     list,
 };

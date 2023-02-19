@@ -162,7 +162,9 @@ function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails 
                             </ListItemIcon>
                             <ListItemText primary="Profile" />
                         </ListItemButton>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => {
+                            setOpenForm(false);
+                        }}>
                             <ListItemIcon>
                                 <AssignmentIndIcon />
                             </ListItemIcon>
@@ -188,9 +190,9 @@ function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails 
                     </List>
                 </Drawer>
 
+                
 
-
-                {openForm === false ? <GredsLoader myGredDetails={myGredDetails} setOpenForm={setOpenForm} /> : <CreateGred userDetails={userDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} />}
+                {openForm === false ? <GredsLoader userDetails={userDetails} myGredDetails={myGredDetails} setOpenForm={setOpenForm} setMyGredDetails={setMyGredDetails} /> : <CreateGred userDetails={userDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setOpenForm={setOpenForm} />}
             </Box>
         </ThemeProvider>
     );
@@ -218,10 +220,6 @@ export default function GredsPage({ userDetails, setUserDetails, myGredDetails, 
                         res.json()
                             .then((body) => {
                                 body = body.gredsList;
-                                body.unshift({
-                                    _id: "+",
-                                    title: "Create a new Sub-GREDDIIT"
-                                });
                                 setMyGredDetails(body);
                                 return <Content userDetails={userDetails.gredsList} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} />;
                             });

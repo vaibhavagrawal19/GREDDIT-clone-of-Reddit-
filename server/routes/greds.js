@@ -4,9 +4,9 @@ const gredsController = require("../controllers/greds")
 
 router.route("/")
     .get(gredsController.getAllGreds)
-    .post(gredsController.createNewGred);
+    .post(gredsController.createNewGred)
     // .patch(gredsController.updateGred)
-    // .delete(gredsController.deleteGred);
+    .delete(gredsController.deleteGred);
 
 router.route("/list")
     .post(gredsController.list);

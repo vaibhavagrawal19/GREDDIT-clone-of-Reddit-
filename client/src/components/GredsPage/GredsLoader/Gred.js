@@ -5,16 +5,42 @@ import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
+import { Button } from "@mui/material";
+import { useState } from "react";
 
-function Gred({ gred, setOpenForm }) {
-    function handleClick() {
-        if (gred._id === "+") {
-            setOpenForm(true);
-        }
-    }
+function handleDelete(id, user, myGredDetails, setDisableDelete, setMyGredDetails) {
+    setDisableDelete(true);
+    fetch("http://localhost:4000/greds/", {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "id": String(id),
+            "user": String(user),
+        },
+    })
+        .then(
+            (res) => {
+                if (res.ok) {
+                    for (let i = 0; i < myGredDetails.length; i++) {
+                        if (myGredDetails[i]._id === id) {
+                            delete myGredDetails[i];
+                            break;
+                        }
+                        
+                    }
+                    console.log(myGredDetails);
+                    setMyGredDetails(myGredDetails);
+                    setDisableDelete(false);
+                }
+            });
+
+}
+
+function Gred({ gred, userDetails, myGredDetails, setMyGredDetails }) {
+    const [disableDelete, setDisableDelete] = useState(false);
     return (
-        <Grid item xs={6} md={12} onClick={handleClick}>
-            <CardActionArea component="a" href="#">
+        <Grid item xs={6} md={12}>
+            <CardActionArea component="a">
                 <Card sx={{ display: 'flex' }}>
                     <CardContent sx={{ flex: 1 }}>
                         <Typography component="h2" variant="h5">
@@ -33,6 +59,9 @@ function Gred({ gred, setOpenForm }) {
                         image={gred.image}
                         alt={gred.imageLabel}
                     />}
+                    <CardContent>
+                        <Button variant="contained" style={{ backgroundColor: "red" }} disabled={disableDelete} onClick={() => { handleDelete(gred._id, userDetails._id, myGredDetails, setDisableDelete, setMyGredDetails) }}>DELETE</Button>
+                    </CardContent>
 
                 </Card>
             </CardActionArea>

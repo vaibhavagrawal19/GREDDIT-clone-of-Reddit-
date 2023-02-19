@@ -14,29 +14,35 @@ export default function ProfileDetails({ userDetails }) {
     }
     return (
         <div>
-            <Title><CreateIcon onClick={editProfile} style={{cursor: "pointer"}}></CreateIcon>{' '}Profile Details</Title>
-            <Typography component="p" variant="h4">
-                First Name:
-            </Typography>
+            <Title><CreateIcon onClick={editProfile} style={{ cursor: "pointer" }}></CreateIcon>{' '}Profile Details</Title>
             <Typography color="text.secondary" sx={{ flex: 1 }}>
+                Firstname: 
+            </Typography>
+            <Typography component="p" variant="h4">
                 {userDetails.firstname}
             </Typography>
-            <Typography component="p" variant="h4">
-                Last Name:
-            </Typography>
             <Typography color="text.secondary" sx={{ flex: 1 }}>
-                {userDetails.lastname}
+                Lastname:
             </Typography>
             <Typography component="p" variant="h4">
-                Username:
+            {userDetails.lastname}
             </Typography>
             <Typography color="text.secondary" sx={{ flex: 1 }}>
+                Username: 
+            </Typography>
+            <Typography component="p" variant="h4">
                 {userDetails.username}
             </Typography>
+            <Typography color="text.secondary" sx={{ flex: 1 }}>
+                Email: 
+            </Typography>
             <Typography component="p" variant="h4">
-                Age:
+                {userDetails.email}
             </Typography>
             <Typography color="text.secondary" sx={{ flex: 1 }}>
+                Age: 
+            </Typography>
+            <Typography component="p" variant="h4">
                 {userDetails.age}
             </Typography>
             {/* <div>
