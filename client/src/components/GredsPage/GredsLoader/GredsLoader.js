@@ -6,6 +6,7 @@ import Container from '@mui/material/Container';
 import { Button } from "@mui/material";
 
 export default function GredsLoader({ myGredDetails, setOpenForm, userDetails, setMyGredDetails }) {
+    console.log(myGredDetails);
     return (
         <Box
             component="main"

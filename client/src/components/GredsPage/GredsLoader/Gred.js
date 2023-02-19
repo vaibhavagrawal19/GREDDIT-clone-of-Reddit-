@@ -21,15 +21,14 @@ function handleDelete(id, user, myGredDetails, setDisableDelete, setMyGredDetail
         .then(
             (res) => {
                 if (res.ok) {
+                    let newGredDetails = new Array();
                     for (let i = 0; i < myGredDetails.length; i++) {
-                        if (myGredDetails[i]._id === id) {
-                            delete myGredDetails[i];
-                            break;
+                        if (myGredDetails[i]._id !== id) {
+                            newGredDetails.push(myGredDetails[i]);
                         }
-                        
                     }
                     console.log(myGredDetails);
-                    setMyGredDetails(myGredDetails);
+                    setMyGredDetails(newGredDetails);
                     setDisableDelete(false);
                 }
             });
@@ -38,6 +37,7 @@ function handleDelete(id, user, myGredDetails, setDisableDelete, setMyGredDetail
 
 function Gred({ gred, userDetails, myGredDetails, setMyGredDetails }) {
     const [disableDelete, setDisableDelete] = useState(false);
+    console.log("re-render");
     return (
         <Grid item xs={6} md={12}>
             <CardActionArea component="a">
