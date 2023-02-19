@@ -24,20 +24,6 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import GredsLoader from './GredsLoader/GredsLoader';
 import CreateGred from './CreateGred';
 
-
-function Copyright(props) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit">
-                GREDDIIT
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
-
 const drawerWidth = 240;
 
 const AppBar = styled(MuiAppBar, {
@@ -170,7 +156,9 @@ function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails 
                             </ListItemIcon>
                             <ListItemText primary="My Sub-GREDDIITS" />
                         </ListItemButton>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/allgreds");
+                        }}>
                             <ListItemIcon>
                                 <PeopleIcon />
                             </ListItemIcon>
@@ -190,7 +178,7 @@ function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails 
                     </List>
                 </Drawer>
 
-                
+
 
                 {openForm === false ? <GredsLoader userDetails={userDetails} myGredDetails={myGredDetails} setOpenForm={setOpenForm} setMyGredDetails={setMyGredDetails} /> : <CreateGred userDetails={userDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setOpenForm={setOpenForm} />}
             </Box>

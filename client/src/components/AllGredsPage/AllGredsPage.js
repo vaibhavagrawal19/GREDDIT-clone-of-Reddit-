@@ -12,23 +12,31 @@ import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import LogoutIcon from '@mui/icons-material/Logout';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import PeopleIcon from '@mui/icons-material/People';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
 import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import Chart from './Chart';
-import ProfileDetails from './ProfileDetails';
-import SocialConnect from './SocialConnect';
-import Orders from './Orders';
-import { Navigate, useNavigate } from "react-router-dom";
-
 import { useState } from "react";
+import { useNavigate, Navigate } from 'react-router';
+import LogoutIcon from '@mui/icons-material/Logout';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import GredsLoader from './GredsLoader/GredsLoader';
+import CreateGred from './CreateGred';
+
+
+function Copyright(props) {
+    return (
+        <Typography variant="body2" color="text.secondary" align="center" {...props}>
+            {'Copyright © '}
+            <Link color="inherit">
+                GREDDIIT
+            </Link>{' '}
+            {new Date().getFullYear()}
+            {'.'}
+        </Typography>
+    );
+}
 
 const drawerWidth = 240;
 
@@ -78,9 +86,10 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
-function DashboardContent({ userDetails, setUserDetails }) {
+function Content({ userDetails, setUserDetails, allGreds, setAllGreds }) {
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
+    const [openForm, setOpenForm] = React.useState(false);
     const toggleDrawer = () => {
         setOpen(!open);
     };
@@ -114,7 +123,7 @@ function DashboardContent({ userDetails, setUserDetails }) {
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-                            Profile
+                            My Sub-GREDDIITS
                         </Typography>
                         {/* <IconButton color="inherit">
                             <Badge badgeContent={4} color="secondary">
@@ -145,7 +154,9 @@ function DashboardContent({ userDetails, setUserDetails }) {
                     <List component="nav">
 
 
-                        <ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/profile");
+                        }}>
                             <ListItemIcon>
                                 <DashboardIcon />
                             </ListItemIcon>
@@ -159,9 +170,7 @@ function DashboardContent({ userDetails, setUserDetails }) {
                             </ListItemIcon>
                             <ListItemText primary="My Sub-GREDDIITS" />
                         </ListItemButton>
-                        <ListItemButton onClick={() => {
-                            navigate("/allgreds");
-                        }}>
+                        <ListItemButton>
                             <ListItemIcon>
                                 <PeopleIcon />
                             </ListItemIcon>
@@ -170,108 +179,95 @@ function DashboardContent({ userDetails, setUserDetails }) {
                         <ListItemButton onClick={() => {
                             localStorage.removeItem("refreshToken");
                             setUserDetails(false);
-                            console.log("here");
                             navigate("/");
-                        }}>
+                        }
+                        }>
                             <ListItemIcon>
                                 <LogoutIcon />
                             </ListItemIcon>
                             <ListItemText primary="LOGOUT" />
                         </ListItemButton>
-
-
-
-                        {/* <Divider sx={{ my: 1 }} />
-                        {secondaryListItems} */}
                     </List>
                 </Drawer>
-                <Box
-                    component="main"
-                    sx={{
-                        backgroundColor: (theme) =>
-                            theme.palette.mode === 'light'
-                                ? theme.palette.grey[100]
-                                : theme.palette.grey[900],
-                        flexGrow: 1,
-                        height: '100vh',
-                        overflow: 'auto',
-                    }}
-                >
-                    <Toolbar />
-                    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        <Grid container spacing={3}>
-                            {/* Chart */}
-                            <Grid item xs={12} md={8} lg={6}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 500,
-                                    }}
-                                >
-                                    {/* <Chart /> */}
-                                    <ProfileDetails userDetails={userDetails} />
 
-                                </Paper>
-                            </Grid>
-                            {/* Recent Deposits */}
-                            <Grid item xs={12} md={4} lg={6}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 500,
-                                    }}
-                                >
-                                    <SocialConnect userDetails={userDetails} />
-                                </Paper>
-                            </Grid>
-                        </Grid>
-                    </Container>
-                </Box>
+
+                <GredsLoader userDetails={userDetails} allGreds={allGreds} setAllGreds={setAllGreds} />
             </Box>
         </ThemeProvider>
     );
 }
 
-export default function Dashboard({ userDetails, setUserDetails }) {
+export default function AllGredsPage({ userDetails, setUserDetails, myGredDetails, setMyGredDetails }) {
+    const [allGreds, setAllGreds] = useState(false);
+    console.log(allGreds);
+    const navigate = useNavigate();
     if (!localStorage.getItem("refreshToken")) {
         return <Navigate to="/" />;
     }
-
-    if (userDetails) {
-        return <DashboardContent userDetails={userDetails} setUserDetails={setUserDetails} />
+    if (userDetails && allGreds) {
+        return <Content userDetails={userDetails.gredsList} setUserDetails={setUserDetails} allGreds={allGreds} setAllGreds={setAllGreds} />;
     }
+    else if (userDetails) {
+        fetch("http://localhost:4000/greds/list", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "user": String(userDetails._id),
+            },
+        })
+            .then(
+                (res) => {
+                    if (res.ok) {
+                        res.json()
+                            .then((body) => {
+                                setAllGreds(body);
+                                return (
+                                    <div>
+                                        Loading...
+                                    </div>
+                                )
+                            });
+                    }
+                    else {
+                        res.json()
+                            .then((body) => {
+                                let errMsg = body.message;
+                                console.log(errMsg);
+                            });
+                    }
+                }
+            )
 
-    fetch("http://localhost:4000/auth/refresh", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "refreshToken": localStorage.getItem("refreshToken"),
-        },
-    })
-        .then(
-            (res) => {
-                if (res.ok) {
-                    let body = res.json();
-                    body.then((body) => {
-                        setUserDetails(body);
-                    });
+    }
+    else {
+        fetch("http://localhost:4000/auth/refresh", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "refreshToken": localStorage.getItem("refreshToken"),
+            },
+        })
+            .then(
+                (res) => {
+                    if (res.ok) {
+                        let body = res.json();
+                        body.then((body) => {
+                            setUserDetails(body);
+                        });
+                    }
+                    else {
+                        return navigate("/");
+                    }
                 }
-                else {
-                    return <Navigate to="/" />;
-                }
-            }
+            )
+            .catch((err) => {
+                console.log(err);
+            });
+
+        return (
+            <div>
+                Loading...
+            </div>
         )
-        .catch((err) => {
-            console.log(err);
-        });
-
-    return (
-        <div>
-            Loading...
-        </div>
-    )
+    }
 }

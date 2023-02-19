@@ -5,6 +5,8 @@ import SubGREDDIIT from "./components/SubGREDDIIT/SubGREDDIIT";
 import Dashboard from "./components/Dashboard/Dashboard";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import GredsPage from "./components/GredsPage/GredsPage";
+import AllGredsPage from "./components/AllGredsPage/AllGredsPage";
+
 import { useState } from "react";
 function App() {
     const [userDetails, setUserDetails] = useState(false);
@@ -16,6 +18,7 @@ function App() {
                 <Route path="/profile" element={<Dashboard userDetails={userDetails} setUserDetails={setUserDetails} />}></Route>
                 <Route path="/mygreds" element={<GredsPage userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} />}></Route>
                 <Route path="/mygreds/gred" element={<SubGREDDIIT />}></Route>
+                <Route path="/allgreds" element={<AllGredsPage userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} />}></Route>
             </Routes>
         </BrowserRouter>
     );
