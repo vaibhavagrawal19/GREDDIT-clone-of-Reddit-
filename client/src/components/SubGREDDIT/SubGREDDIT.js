@@ -28,6 +28,9 @@ import FeaturedPost from './FeaturedPost';
 import { useState } from "react";
 import { Button } from "@mui/material";
 import CreatePost from './createPost';
+import Card from '@mui/material/Card';
+import CardActionArea from '@mui/material/CardActionArea';
+import CardContent from '@mui/material/CardContent';
 
 const drawerWidth = 240;
 
@@ -96,7 +99,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
-function Content({ currGredDetails }) {
+function Content({ currGredDetails, setCurrGredDetails }) {
     // const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
@@ -210,35 +213,47 @@ function Content({ currGredDetails }) {
                         overflow: 'auto',
                     }}
                 >
-                    <Toolbar />
-                    <Toolbar />
 
-                    <Container>
-                        <center>
-                            <Button variant="contained" onClick={() => {
-                                setOpenForm(true);
-                            }}>Post something!</Button>
-                        </center>
-                    </Container>
+                    {openForm ? <CreatePost currGredDetails={currGredDetails} setOpenForm={setOpenForm} setCurrGredDetails={setCurrGredDetails} /> :
+                        (<div>
+                            <Toolbar />
+                            <Toolbar />
+                            <Container>
+                                <center>
+                                    <Button variant="contained" onClick={() => {
+                                        setOpenForm(true);
+                                    }}>Post something!</Button>
+                                </center>
+                            </Container>
+                            <Toolbar />
+                            <Container maxWidth="lg">
+                                <Grid container spacing={4}>
+                                    {currGredDetails.postDetails.map((post) => (
+                                        <Grid item xs={6} md={12}>
 
-                    {openForm ? <CreatePost currGredDetails={currGredDetails} setOpenForm={setOpenForm} /> : <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        <Grid container spacing={3}>
-                            {currGredDetails.postDetails.map((post) => (
-                                <Grid item xs={12} md={8} lg={12}>
-                                    <Paper
-                                        sx={{
-                                            p: 2,
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            height: "auto",
-                                        }}
-                                    >
+                                            <Card sx={{ display: 'flex' }}>
+                                                <CardContent sx={{ flex: 1 }}>
+                                                    <Typography component="h2" variant="h5">
+                                                        {post.title}
+                                                    </Typography>
+                                                    <Typography variant="subtitle1" color="text.secondary">
+                                                        by {post.username}
+                                                    </Typography>
+                                                    <Toolbar />
+                                                    <Typography variant="subtitle1" paragraph>
+                                                        {post.desc}
+                                                    </Typography>
+                                                </CardContent>
+                                                <CardContent>
+                                                    <Button variant="contained" disabled={false}>FOLLOW</Button>
+                                                </CardContent>
 
-                                    </Paper>
+                                            </Card>
+                                        </Grid>
+                                    ))}
                                 </Grid>
-                            ))}
-                        </Grid>
-                    </Container>}
+                            </Container>
+                        </div>)}
                 </Box>
             </Box>
         </ThemeProvider>
@@ -251,7 +266,7 @@ export default function SubGREDDIT({ currGredDetails, setCurrGredDetails }) {
     }
 
     if (currGredDetails.postDetails) {
-        return <Content currGredDetails={currGredDetails} />
+        return <Content currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />
     }
 
     console.log("about to fetch...");

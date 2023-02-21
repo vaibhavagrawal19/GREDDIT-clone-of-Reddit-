@@ -23,7 +23,7 @@ import { NoEncryption } from '@mui/icons-material';
 import { useNavigate } from "react-router";
 import Diversity2Icon from '@mui/icons-material/Diversity2';
 
-export default function CreatePost({ currGredDetails, setOpenForm }) {
+export default function CreatePost({ currGredDetails, setOpenForm, setCurrGredDetails }) {
     console.log(currGredDetails);
     const [buttonEnable, setButtonEnable] = useState(true);
     const [state, setState] = useState({
@@ -52,9 +52,9 @@ export default function CreatePost({ currGredDetails, setOpenForm }) {
                 (res) => {
                     if (res.ok) {
                         res.json().then((body) => {
-                            console.log(body);
                             setButtonEnable(true);
                             setOpenForm(false);
+                            setCurrGredDetails(currGredDetails.gred._id);
                         })
                     }
                     else {

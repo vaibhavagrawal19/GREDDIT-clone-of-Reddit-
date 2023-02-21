@@ -16,7 +16,11 @@ const createPost = asyncHandler(async (req, res) => {
     if (!gred.allowedUsers.includes(String(user))) {
         return res.status(401);
     }
-    const postData = { user: req.user, title, desc };
+
+    const userObj = await User.findById(user).lean().exec();
+    const username = userObj.username;
+    const postData = { user: req.user, title, desc, gred: id, username };
+
     const post = await Post.create(postData);
 
     if (!post) {
@@ -24,6 +28,7 @@ const createPost = asyncHandler(async (req, res) => {
     }
 
     gred.posts.push(post._id);
+    await gred.save();
     return res.status(201).json({ post });
 })
 

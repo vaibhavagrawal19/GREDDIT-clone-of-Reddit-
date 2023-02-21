@@ -6,9 +6,18 @@ const postSchema = new mongoose.Schema({
         required: true,
         ref: "User",
     },
+    username: {
+        type: String,
+        required: true,
+    },
     title: {
         type: String,
         required: true,
+    },
+    gred: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "Gred",
     },
     upvotes: {
         type: Number,
