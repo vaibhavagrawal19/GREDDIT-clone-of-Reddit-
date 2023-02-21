@@ -191,7 +191,7 @@ function Content({ userDetails, setUserDetails, allGreds, setAllGreds }) {
                 </Drawer>
 
 
-                <GredsLoader userDetails={userDetails} allGreds={allGreds} setAllGreds={setAllGreds} />
+                <GredsLoader userDetails={userDetails} allGreds={allGreds} setAllGreds={setAllGreds} setUserDetails={setUserDetails} />
             </Box>
         </ThemeProvider>
     );
@@ -220,6 +220,7 @@ export default function AllGredsPage({ userDetails, setUserDetails, myGredDetail
                         res.json()
                             .then((body) => {
                                 setAllGreds(body);
+                                console.log(body);
                                 return (
                                     <div>
                                         Loading...

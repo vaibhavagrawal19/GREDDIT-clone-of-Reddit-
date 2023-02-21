@@ -80,7 +80,7 @@ function handleJoin(gred, user, allGreds, setAllGreds, setDisable) {
 }
 
 function Gred({ gred, userDetails, allGreds, setAllGreds, status }) {
-    const [disable, setDisable] = useState(userDetails.subGreds.includes(gred._id));
+    const [disable, setDisable] = useState(String(gred.user) === String(userDetails._id));
     return (
         <Grid item xs={6} md={12}>
             <CardActionArea component="a">

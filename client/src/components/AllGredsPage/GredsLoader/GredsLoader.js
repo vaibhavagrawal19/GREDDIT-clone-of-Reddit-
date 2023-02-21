@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import { Button, Typography } from "@mui/material";
 
-export default function GredsLoader({ userDetails, allGreds, setAllGreds }) {
+export default function GredsLoader({ userDetails, allGreds, setAllGreds, setUserDetails }) {
     return (
         <Box
             component="main"
@@ -31,7 +31,7 @@ export default function GredsLoader({ userDetails, allGreds, setAllGreds }) {
             <Container maxWidth="lg">
                 <Grid container spacing={4}>
                     {allGreds.joinedList.map((gred) => (
-                        <Gred key={gred._id} gred={gred} userDetails={userDetails} allGreds={allGreds} setAllGreds={setAllGreds} status="joined" />
+                        <Gred key={gred._id} gred={gred} userDetails={userDetails} setUserDetails={setUserDetails} allGreds={allGreds} setAllGreds={setAllGreds} status="joined" />
                     ))}
                 </Grid>
             </Container>
@@ -45,7 +45,7 @@ export default function GredsLoader({ userDetails, allGreds, setAllGreds }) {
             <Container maxWidth="lg">
                 <Grid container spacing={4}>
                     {allGreds.pendingList.map((gred) => (
-                        <Gred key={gred._id} gred={gred} userDetails={userDetails} allGreds={allGreds} setAllGreds={setAllGreds} status="pending" />
+                        <Gred key={gred._id} gred={gred} userDetails={userDetails} setUserDetails={setUserDetails} allGreds={allGreds} setAllGreds={setAllGreds} status="pending" />
                     ))}
                 </Grid>
             </Container>
@@ -60,7 +60,7 @@ export default function GredsLoader({ userDetails, allGreds, setAllGreds }) {
             <Container maxWidth="lg">
                 <Grid container spacing={4}>
                     {allGreds.othersList.map((gred) => (
-                        <Gred key={gred._id} gred={gred} userDetails={userDetails} allGreds={allGreds} setAllGreds={setAllGreds} status="others" />
+                        <Gred key={gred._id} gred={gred} userDetails={userDetails} setUserDetails={setUserDetails} allGreds={allGreds} setAllGreds={setAllGreds} status="others" />
                     ))}
                 </Grid>
             </Container>
@@ -75,7 +75,7 @@ export default function GredsLoader({ userDetails, allGreds, setAllGreds }) {
             <Container maxWidth="lg">
                 <Grid container spacing={4}>
                     {allGreds.blockedList.map((gred) => (
-                        <Gred key={gred._id} gred={gred} userDetails={userDetails} allGreds={allGreds} setAllGreds={setAllGreds} status="blocked" />
+                        <Gred key={gred._id} gred={gred} userDetails={userDetails} setUserDetails={setUserDetails} allGreds={allGreds} setAllGreds={setAllGreds} status="blocked" />
                     ))}
                 </Grid>
             </Container>

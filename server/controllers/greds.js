@@ -44,7 +44,7 @@ const createNewGred = asyncHandler(async (req, res) => {
 
 const deleteGred = asyncHandler(async (req, res) => {
     const id = req.get("id");
-    const user = req.get("user");
+    const user = req.user;
     if (!id || !user) {
         return res.status(400).json({ message: "InCompleteInfo" });
     }
