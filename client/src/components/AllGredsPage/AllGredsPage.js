@@ -22,7 +22,6 @@ import { useNavigate, Navigate } from 'react-router';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GredsLoader from './GredsLoader/GredsLoader';
-import CreateGred from './CreateGred';
 
 
 function Copyright(props) {
@@ -178,6 +177,7 @@ function Content({ userDetails, setUserDetails, allGreds, setAllGreds }) {
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             localStorage.removeItem("refreshToken");
+                            setUserDetails(false);
                             setUserDetails(false);
                             navigate("/");
                         }

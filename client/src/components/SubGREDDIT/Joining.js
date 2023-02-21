@@ -12,17 +12,22 @@ import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import Container from '@mui/material/Container';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import PeopleIcon from '@mui/icons-material/People';
 import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import { Navigate } from "react-router-dom";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import ReportIcon from '@mui/icons-material/Report';
 import { useState } from "react";
-import { useNavigate, Navigate } from 'react-router';
-import LogoutIcon from '@mui/icons-material/Logout';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import GredsLoader from './GredsLoader/GredsLoader';
-import CreateGred from './CreateGred';
+import { Button } from "@mui/material";
+import CreatePost from './createPost';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 
 const drawerWidth = 240;
 
@@ -72,13 +77,14 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
-function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails, setCurrGredDetails }) {
-    const navigate = useNavigate();
+function Content({ currGredDetails, setCurrGredDetails }) {
     const [open, setOpen] = React.useState(true);
-    const [openForm, setOpenForm] = React.useState(false);
     const toggleDrawer = () => {
         setOpen(!open);
     };
+    const [openForm, setOpenForm] = useState(false);
+
+    console.log(currGredDetails.pendingUsernames);
 
     return (
         <ThemeProvider theme={mdTheme}>
@@ -109,7 +115,7 @@ function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails,
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-                            My Sub-GREDDIITS
+                            {currGredDetails.gred.title}
                         </Typography>
                         {/* <IconButton color="inherit">
                             <Badge badgeContent={4} color="secondary">
@@ -140,122 +146,123 @@ function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails,
                     <List component="nav">
 
 
-                        <ListItemButton onClick={() => {
-                            navigate("/profile");
-                        }}>
-                            <ListItemIcon>
-                                <DashboardIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Profile" />
-                        </ListItemButton>
-                        <ListItemButton onClick={() => {
-                            setOpenForm(false);
-                        }}>
-                            <ListItemIcon>
-                                <AssignmentIndIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="My Sub-GREDDITS" />
-                        </ListItemButton>
-                        <ListItemButton onClick={() => {
-                            navigate("/allgreds");
-                        }}>
+                        <ListItemButton>
                             <ListItemIcon>
                                 <PeopleIcon />
                             </ListItemIcon>
-                            <ListItemText primary="All Sub-GREDDITS" />
+                            <ListItemText primary="Users" />
+                        </ListItemButton>
+                        <ListItemButton>
+                            <ListItemIcon>
+                                <AssignmentIndIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Joining Requests" />
+                        </ListItemButton>
+                        <ListItemButton>
+                            <ListItemIcon>
+                                <BarChartIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Stats" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             localStorage.removeItem("refreshToken");
-                            setUserDetails(false);
-                            setMyGredDetails(false);
-                            setCurrGredDetails(false);
-                            navigate("/");
                         }
                         }>
                             <ListItemIcon>
-                                <LogoutIcon />
+                                <ReportIcon />
                             </ListItemIcon>
-                            <ListItemText primary="LOGOUT" />
+                            <ListItemText primary="Reported" />
                         </ListItemButton>
+
+
+
+                        {/* <Divider sx={{ my: 1 }} />
+                        {secondaryListItems} */}
                     </List>
                 </Drawer>
+                <Box
+                    component="main"
+                    sx={{
+                        backgroundColor: (theme) =>
+                            theme.palette.mode === 'light'
+                                ? theme.palette.grey[100]
+                                : theme.palette.grey[900],
+                        flexGrow: 1,
+                        height: '100vh',
+                        overflow: 'auto',
+                    }}
+                >
 
-
-
-                {openForm === false ? <GredsLoader userDetails={userDetails} myGredDetails={myGredDetails} setOpenForm={setOpenForm} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} /> : <CreateGred userDetails={userDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setOpenForm={setOpenForm} />}
+                    {
+                        (<div>
+                            <Toolbar />
+                            <Toolbar />
+                            <Toolbar />
+                            <Container maxWidth="lg">
+                                <Grid container spacing={4}>
+                                    {currGredDetails.pendingUsernames.map((user) => (
+                                        <Grid item xs={6} md={12}>
+                                            <Card sx={{ display: 'flex' }}>
+                                                <CardContent sx={{ flex: 1 }}>
+                                                    <Typography component="h2" variant="h5">
+                                                        {user}
+                                                    </Typography>
+                                                </CardContent>
+                                                <CardContent>
+                                                    <Button variant="contained" style={{ backgroundColor: "green" }} disabled={false}>ACCEPT</Button>
+                                                    <Button variant="contained" style={{ backgroundColor: "red" }} disabled={false}>REJECT</Button>
+                                                </CardContent>
+                                            </Card>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </Container>
+                        </div>)}
+                </Box>
             </Box>
         </ThemeProvider>
     );
 }
 
-export default function GredsPage({ userDetails, setUserDetails, myGredDetails, setMyGredDetails, setCurrGredDetails }) {
-    const navigate = useNavigate();
-    if (!localStorage.getItem("refreshToken")) {
+export default function Joining({ currGredDetails, setCurrGredDetails }) {
+    if (!currGredDetails) {
         return <Navigate to="/" />;
     }
-    if (userDetails && myGredDetails) {
-        return <Content userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} />;
-    }
-    else if (userDetails) {
-        fetch("http://localhost:4000/greds/list", {
-            method: "POST",
-            headers: {
-                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ ids: userDetails.subGreds })
-        })
-            .then(
-                (res) => {
-                    if (res.ok) {
-                        res.json()
-                            .then((body) => {
-                                body = body.gredsList;
-                                console.log(body);
-                                setMyGredDetails(body);
-                                return <Content userDetails={userDetails.gredsList} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} />;
-                            });
-                    }
-                    else {
-                        res.json()
-                            .then((body) => {
-                                let errMsg = body.message;
-                                console.log(errMsg);
-                            });
-                    }
-                }
-            )
 
+    if (currGredDetails.pendingUsernames) {
+        return <Content currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />
     }
-    else {
-        fetch("http://localhost:4000/auth/refresh", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "refreshToken": localStorage.getItem("refreshToken"),
-            },
-        })
-            .then(
-                (res) => {
-                    if (res.ok) {
-                        let body = res.json();
-                        body.then((body) => {
-                            setUserDetails(body);
-                        });
-                    }
-                    else {
-                        return navigate("/");
-                    }
-                }
-            )
-            .catch((err) => {
-                console.log(err);
-            });
 
-        return (
-            <div>
-                Loading...
-            </div>
-        )
-    }
+    console.log(currGredDetails.gred.pendingUsers);
+
+        let pendingUsernames = new Array(currGredDetails.gred.pendingUsers.length);
+        for (let i = 0; i < currGredDetails.gred.pendingUsers.length; i++) {
+            fetch("http://localhost:4000/users/oneuser", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                    "id": String(currGredDetails.gred.pendingUsers[i]),
+                },
+
+            })
+                .then(
+                    (res) => {
+                        if (res.ok) {
+                            res.json().then(
+                                (body) => {
+                                    pendingUsernames[i] = String(body.username);
+                                    if (i == pendingUsernames.length - 1) {
+                                        setCurrGredDetails({
+                                            ...currGredDetails,
+                                            pendingUsernames,
+                                        });
+                                    }
+                                }
+                            )
+                        }
+                    }
+                )
+        }
+    return <div>Loading...</div>;
 }

@@ -6,6 +6,7 @@ import Dashboard from "./components/Dashboard/Dashboard";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import GredsPage from "./components/GredsPage/GredsPage";
 import AllGredsPage from "./components/AllGredsPage/AllGredsPage";
+import Joining from "./components/SubGREDDIT/Joining";
 
 import { useState } from "react";
 function App() {
@@ -15,10 +16,11 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<LoginRegister userDetails={userDetails} setUserDetails={setUserDetails} />}></Route>
+                <Route path="/" element={<LoginRegister userDetails={userDetails} setUserDetails={setUserDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
                 <Route path="/profile" element={<Dashboard userDetails={userDetails} setUserDetails={setUserDetails} />}></Route>
                 <Route path="/mygreds" element={<GredsPage userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
                 <Route path="/mygreds/gred" element={<SubGREDDIT currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
+                <Route path="/mygreds/joinReq" element={<Joining currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
                 <Route path="/allgreds" element={<AllGredsPage userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} />}></Route>
             </Routes>
         </BrowserRouter>

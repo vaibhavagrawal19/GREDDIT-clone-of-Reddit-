@@ -6,4 +6,7 @@ const verifyJWT = require("../middleware/verifyJWT");
 router.route("/")
     .post(usersController.createNewUser);
 
+router.route("/oneuser")
+    .get(verifyJWT, usersController.getUsername)
+
 module.exports = router;

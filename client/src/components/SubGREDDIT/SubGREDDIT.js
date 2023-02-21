@@ -19,17 +19,14 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ReportIcon from '@mui/icons-material/Report';
-import Header from './Header';
-import FeaturedPost from './FeaturedPost';
 import { useState } from "react";
 import { Button } from "@mui/material";
 import CreatePost from './createPost';
 import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
 import CardContent from '@mui/material/CardContent';
 
 const drawerWidth = 240;
@@ -100,7 +97,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
 function Content({ currGredDetails, setCurrGredDetails }) {
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
         setOpen(!open);
@@ -173,7 +170,9 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                             </ListItemIcon>
                             <ListItemText primary="Users" />
                         </ListItemButton>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/mygreds/joinReq");
+                        }}>
                             <ListItemIcon>
                                 <AssignmentIndIcon />
                             </ListItemIcon>
@@ -266,10 +265,11 @@ export default function SubGREDDIT({ currGredDetails, setCurrGredDetails }) {
     }
 
     if (currGredDetails.postDetails) {
-        return <Content currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />
+        return <Content currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />;
     }
 
-    console.log("about to fetch...");
+    console.log(currGredDetails);
+
     fetch("http://localhost:4000/greds/onegred", {
         method: "GET",
         headers: {
@@ -286,7 +286,6 @@ export default function SubGREDDIT({ currGredDetails, setCurrGredDetails }) {
                             console.log(body);
                             // the currGredDetails is now set to contain the entire information about the subgred, earlier it only had the subgred's id
                             setCurrGredDetails(body);
-                            // return <Content currGredDetails={currGredDetails} />
                         }
                     )
                 }

@@ -47,10 +47,6 @@ const gredSchema = new mongoose.Schema(
             type: Array,
             default: [],
         },
-        joinReq: {
-            type: Array,
-            default: [],
-        },
         reports: {
             type: Array,
             default: [],
