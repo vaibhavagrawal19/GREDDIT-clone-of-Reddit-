@@ -123,7 +123,7 @@ function Content({ userDetails, setUserDetails, allGreds, setAllGreds }) {
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-                            My Sub-GREDDIITS
+                            All Sub-GREDDIITS
                         </Typography>
                         {/* <IconButton color="inherit">
                             <Badge badgeContent={4} color="secondary">
@@ -168,13 +168,13 @@ function Content({ userDetails, setUserDetails, allGreds, setAllGreds }) {
                             <ListItemIcon>
                                 <AssignmentIndIcon />
                             </ListItemIcon>
-                            <ListItemText primary="My Sub-GREDDIITS" />
+                            <ListItemText primary="My Sub-GREDDITS" />
                         </ListItemButton>
                         <ListItemButton>
                             <ListItemIcon>
                                 <PeopleIcon />
                             </ListItemIcon>
-                            <ListItemText primary="All Sub-GREDDIITS" />
+                            <ListItemText primary="All Sub-GREDDITS" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             localStorage.removeItem("refreshToken");
@@ -199,20 +199,19 @@ function Content({ userDetails, setUserDetails, allGreds, setAllGreds }) {
 
 export default function AllGredsPage({ userDetails, setUserDetails, myGredDetails, setMyGredDetails }) {
     const [allGreds, setAllGreds] = useState(false);
-    console.log(allGreds);
     const navigate = useNavigate();
     if (!localStorage.getItem("refreshToken")) {
         return <Navigate to="/" />;
     }
     if (userDetails && allGreds) {
-        return <Content userDetails={userDetails.gredsList} setUserDetails={setUserDetails} allGreds={allGreds} setAllGreds={setAllGreds} />;
+        return <Content userDetails={userDetails} setUserDetails={setUserDetails} allGreds={allGreds} setAllGreds={setAllGreds} />;
     }
     else if (userDetails) {
         fetch("http://localhost:4000/greds/list", {
             method: "GET",
             headers: {
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
                 "Content-Type": "application/json",
-                "user": String(userDetails._id),
             },
         })
             .then(

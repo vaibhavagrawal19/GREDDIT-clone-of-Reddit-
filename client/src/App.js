@@ -1,7 +1,7 @@
 import logo from "./logo.svg";
 import './App.css';
 import LoginRegister from "./components/Authentication/LoginRegister";
-import SubGREDDIIT from "./components/SubGREDDIIT/SubGREDDIIT";
+import SubGREDDIT from "./components/SubGREDDIT/SubGREDDIT";
 import Dashboard from "./components/Dashboard/Dashboard";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import GredsPage from "./components/GredsPage/GredsPage";
@@ -11,13 +11,14 @@ import { useState } from "react";
 function App() {
     const [userDetails, setUserDetails] = useState(false);
     const [myGredDetails, setMyGredDetails] = useState(false);
+    const [currGredDetails, setCurrGredDetails] = useState(false);
     return (
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<LoginRegister userDetails={userDetails} setUserDetails={setUserDetails} />}></Route>
                 <Route path="/profile" element={<Dashboard userDetails={userDetails} setUserDetails={setUserDetails} />}></Route>
-                <Route path="/mygreds" element={<GredsPage userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} />}></Route>
-                <Route path="/mygreds/gred" element={<SubGREDDIIT />}></Route>
+                <Route path="/mygreds" element={<GredsPage userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
+                <Route path="/mygreds/gred" element={<SubGREDDIT currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
                 <Route path="/allgreds" element={<AllGredsPage userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} />}></Route>
             </Routes>
         </BrowserRouter>

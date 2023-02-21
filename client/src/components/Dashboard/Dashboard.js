@@ -157,7 +157,7 @@ function DashboardContent({ userDetails, setUserDetails }) {
                             <ListItemIcon>
                                 <AssignmentIndIcon />
                             </ListItemIcon>
-                            <ListItemText primary="My Sub-GREDDIITS" />
+                            <ListItemText primary="My Sub-GREDDITS" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             navigate("/allgreds");
@@ -165,7 +165,7 @@ function DashboardContent({ userDetails, setUserDetails }) {
                             <ListItemIcon>
                                 <PeopleIcon />
                             </ListItemIcon>
-                            <ListItemText primary="All Sub-GREDDIITS" />
+                            <ListItemText primary="All Sub-GREDDITS" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             localStorage.removeItem("refreshToken");
@@ -255,9 +255,11 @@ export default function Dashboard({ userDetails, setUserDetails }) {
         .then(
             (res) => {
                 if (res.ok) {
+                    console.log(res)
                     let body = res.json();
                     body.then((body) => {
                         setUserDetails(body);
+                        console.log(body);
                     });
                 }
                 else {

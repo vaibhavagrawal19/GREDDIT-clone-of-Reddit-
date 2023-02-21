@@ -72,7 +72,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
-function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails }) {
+function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails, setCurrGredDetails }) {
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
     const [openForm, setOpenForm] = React.useState(false);
@@ -154,7 +154,7 @@ function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails 
                             <ListItemIcon>
                                 <AssignmentIndIcon />
                             </ListItemIcon>
-                            <ListItemText primary="My Sub-GREDDIITS" />
+                            <ListItemText primary="My Sub-GREDDITS" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             navigate("/allgreds");
@@ -162,7 +162,7 @@ function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails 
                             <ListItemIcon>
                                 <PeopleIcon />
                             </ListItemIcon>
-                            <ListItemText primary="All Sub-GREDDIITS" />
+                            <ListItemText primary="All Sub-GREDDITS" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             localStorage.removeItem("refreshToken");
@@ -180,24 +180,25 @@ function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails 
 
 
 
-                {openForm === false ? <GredsLoader userDetails={userDetails} myGredDetails={myGredDetails} setOpenForm={setOpenForm} setMyGredDetails={setMyGredDetails} /> : <CreateGred userDetails={userDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setOpenForm={setOpenForm} />}
+                {openForm === false ? <GredsLoader userDetails={userDetails} myGredDetails={myGredDetails} setOpenForm={setOpenForm} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} /> : <CreateGred userDetails={userDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setOpenForm={setOpenForm} />}
             </Box>
         </ThemeProvider>
     );
 }
 
-export default function GredsPage({ userDetails, setUserDetails, myGredDetails, setMyGredDetails }) {
+export default function GredsPage({ userDetails, setUserDetails, myGredDetails, setMyGredDetails, setCurrGredDetails }) {
     const navigate = useNavigate();
     if (!localStorage.getItem("refreshToken")) {
         return <Navigate to="/" />;
     }
     if (userDetails && myGredDetails) {
-        return <Content userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} />;
+        return <Content userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} />;
     }
     else if (userDetails) {
         fetch("http://localhost:4000/greds/list", {
             method: "POST",
             headers: {
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({ ids: userDetails.subGreds })
@@ -209,7 +210,7 @@ export default function GredsPage({ userDetails, setUserDetails, myGredDetails, 
                             .then((body) => {
                                 body = body.gredsList;
                                 setMyGredDetails(body);
-                                return <Content userDetails={userDetails.gredsList} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} />;
+                                return <Content userDetails={userDetails.gredsList} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} />;
                             });
                     }
                     else {

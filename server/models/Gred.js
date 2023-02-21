@@ -39,6 +39,10 @@ const gredSchema = new mongoose.Schema(
             type: Array,
             default: [],
         },
+        pendingUsers: {
+            type: Array,
+            default: [],
+        },
         blockedUsers: {
             type: Array,
             default: [],

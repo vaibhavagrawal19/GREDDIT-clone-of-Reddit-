@@ -26,7 +26,6 @@ const createNewUser = asyncHandler(async (req, res) => {
     const duplicate = await User.findOne({ username }).lean();
 
     if (duplicate) {
-        console.log("Duplicate username!");
         return res.status(409).json({ message: "Username_Duplicate"});
     }
 

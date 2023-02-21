@@ -7,6 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { Button } from "@mui/material";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function handleDelete(id, user, myGredDetails, setDisableDelete, setMyGredDetails) {
     setDisableDelete(true);
@@ -15,7 +16,7 @@ function handleDelete(id, user, myGredDetails, setDisableDelete, setMyGredDetail
         headers: {
             "Content-Type": "application/json",
             "id": String(id),
-            "user": String(user),
+            "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
         },
     })
         .then(
@@ -32,17 +33,24 @@ function handleDelete(id, user, myGredDetails, setDisableDelete, setMyGredDetail
                     setDisableDelete(false);
                 }
             });
+        }
 
+function openPage(userDetails, gred, setCurrGredDetails, navigate) {
+    setCurrGredDetails(gred._id);
+    console.log(gred._id);
+    navigate("/mygreds/gred");
 }
 
-function Gred({ gred, userDetails, myGredDetails, setMyGredDetails }) {
+function Gred({ gred, userDetails, myGredDetails, setMyGredDetails, setCurrGredDetails }) {
+    const navigate = useNavigate();
     const [disableDelete, setDisableDelete] = useState(false);
     console.log("re-render");
     return (
         <Grid item xs={6} md={12}>
-            <CardActionArea component="a">
+            <CardActionArea component="a"
+                >
                 <Card sx={{ display: 'flex' }}>
-                    <CardContent sx={{ flex: 1 }}>
+                    <CardContent sx={{ flex: 1 }} onClick={() => {openPage(userDetails, gred, setCurrGredDetails, navigate)}}>
                         <Typography component="h2" variant="h5">
                             {gred.title}
                         </Typography>

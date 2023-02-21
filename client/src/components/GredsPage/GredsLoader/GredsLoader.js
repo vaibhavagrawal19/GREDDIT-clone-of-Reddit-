@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import { Button } from "@mui/material";
 
-export default function GredsLoader({ myGredDetails, setOpenForm, userDetails, setMyGredDetails }) {
+export default function GredsLoader({ myGredDetails, setOpenForm, userDetails, setMyGredDetails, setCurrGredDetails }) {
     console.log(myGredDetails);
     return (
         <Box
@@ -27,7 +27,7 @@ export default function GredsLoader({ myGredDetails, setOpenForm, userDetails, s
                 <center>
                 <Button variant="contained" onClick={() => {
                     setOpenForm(true);
-                }}>Create New SubGREDDIIT</Button>
+                }}>Create New SubGREDDIT</Button>
                 </center>
             </Container>
             <Toolbar />
@@ -35,7 +35,7 @@ export default function GredsLoader({ myGredDetails, setOpenForm, userDetails, s
             <Container maxWidth="lg">
                 <Grid container spacing={4}>
                     {myGredDetails.map((gred) => (
-                        <Gred key={gred._id} gred={gred} setOpenForm={setOpenForm} userDetails={userDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} />
+                        <Gred key={gred._id} gred={gred} setOpenForm={setOpenForm} userDetails={userDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} />
                     ))}
                 </Grid>
             </Container>

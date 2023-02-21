@@ -69,11 +69,11 @@ export default function Login({ setUserDetails, setNewUser }) {
                 if (res.ok) {
                     let body = res.json();
                     body.then((body) => {
-                        const { refreshToken } = body;
+                        const { refreshToken, foundUser } = body;
                         localStorage.setItem("refreshToken", refreshToken);
 
                         // logic to go to the profile page
-                        setUserDetails(body.foundUser);
+                        setUserDetails(foundUser);
                     });
                 }
                 else {

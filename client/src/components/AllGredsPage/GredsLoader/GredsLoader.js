@@ -36,21 +36,50 @@ export default function GredsLoader({ userDetails, allGreds, setAllGreds }) {
                 </Grid>
             </Container>
             <Toolbar />
+
+            <Container>
+                <center>
+                    <Typography>Pending Join Requests</Typography>
+                </center>
+            </Container>
+            <Container maxWidth="lg">
+                <Grid container spacing={4}>
+                    {allGreds.pendingList.map((gred) => (
+                        <Gred key={gred._id} gred={gred} userDetails={userDetails} allGreds={allGreds} setAllGreds={setAllGreds} status="pending" />
+                    ))}
+                </Grid>
+            </Container>
+            <Toolbar />
+
             <Container>
                 <center>
                     <Typography>Other Sub-GREDDITS</Typography>
                 </center>
             </Container>
+
             <Container maxWidth="lg">
                 <Grid container spacing={4}>
-                    {allGreds.othersList.map((gred) => (
-                        <Gred key={gred._id} gred={gred} userDetails={userDetails} allGreds={allGreds} setAllGreds={setAllGreds} status="pending" />
-                    ))}
                     {allGreds.othersList.map((gred) => (
                         <Gred key={gred._id} gred={gred} userDetails={userDetails} allGreds={allGreds} setAllGreds={setAllGreds} status="others" />
                     ))}
                 </Grid>
             </Container>
+            <Toolbar />
+
+            <Container>
+                <center>
+                    <Typography>Blocked</Typography>
+                </center>
+            </Container>
+
+            <Container maxWidth="lg">
+                <Grid container spacing={4}>
+                    {allGreds.blockedList.map((gred) => (
+                        <Gred key={gred._id} gred={gred} userDetails={userDetails} allGreds={allGreds} setAllGreds={setAllGreds} status="blocked" />
+                    ))}
+                </Grid>
+            </Container>
+            <Toolbar />
         </Box>
     )
 }

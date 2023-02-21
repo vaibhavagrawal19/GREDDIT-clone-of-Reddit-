@@ -19,29 +19,19 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import { Navigate } from "react-router-dom";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ReportIcon from '@mui/icons-material/Report';
 import Header from './Header';
 import FeaturedPost from './FeaturedPost';
 import { useState } from "react";
-
-function Copyright(props) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit">
-                GREDDIIT
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
+import { Button } from "@mui/material";
+import CreatePost from './createPost';
 
 const drawerWidth = 240;
 
-const featuredPosts = [
+const posts = [
     {
         title: 'Featured post',
         date: 'Nov 12',
@@ -106,12 +96,13 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
-function DashboardContent({ userDetails }) {
+function Content({ currGredDetails }) {
     // const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
         setOpen(!open);
     };
+    const [openForm, setOpenForm] = useState(false);
 
     return (
         <ThemeProvider theme={mdTheme}>
@@ -142,7 +133,7 @@ function DashboardContent({ userDetails }) {
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-                            SubGREDDIIT Name
+                            {currGredDetails.gred.title}
                         </Typography>
                         {/* <IconButton color="inherit">
                             <Badge badgeContent={4} color="secondary">
@@ -220,19 +211,71 @@ function DashboardContent({ userDetails }) {
                     }}
                 >
                     <Toolbar />
-                    <Container maxWidth="lg">
-                        <Grid container spacing={4}>
-                            {featuredPosts.map((post) => (
-                                <FeaturedPost key={post.title} post={post} />
+                    <Toolbar />
+
+                    <Container>
+                        <center>
+                            <Button variant="contained" onClick={() => {
+                                setOpenForm(true);
+                            }}>Post something!</Button>
+                        </center>
+                    </Container>
+
+                    {openForm ? <CreatePost /> : <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                        <Grid container spacing={3}>
+                            {currGredDetails.postDetails.map((post) => (
+                                <Grid item xs={12} md={8} lg={12}>
+                                    <Paper
+                                        sx={{
+                                            p: 2,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            height: "auto",
+                                        }}
+                                    >
+
+                                    </Paper>
+                                </Grid>
                             ))}
                         </Grid>
-                    </Container>
+                    </Container>}
                 </Box>
             </Box>
         </ThemeProvider>
     );
 }
 
-export default function Dashboard2() {
-    return <DashboardContent />
+export default function SubGREDDIT({ currGredDetails, setCurrGredDetails }) {
+    if (!currGredDetails) {
+        return <Navigate to="/" />;
+    }
+
+    if (currGredDetails.postDetails) {
+        return <Content currGredDetails={currGredDetails} />
+    }
+
+    console.log("about to fetch...");
+    fetch("http://localhost:4000/greds/onegred", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "id": String(currGredDetails),
+            "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+        },
+    })
+        .then(
+            (res) => {
+                if (res.ok) {
+                    res.json().then(
+                        (body) => {
+                            console.log(body);
+                            // the currGredDetails is now set to contain the entire information about the subgred, earlier it only had the subgred's id
+                            setCurrGredDetails(body);
+                            // return <Content currGredDetails={currGredDetails} />
+                        }
+                    )
+                }
+            }
+        );
+    return <div>Loading...</div>;
 }

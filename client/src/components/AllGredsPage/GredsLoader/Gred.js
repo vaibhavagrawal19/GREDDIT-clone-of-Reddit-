@@ -8,36 +8,79 @@ import CardMedia from '@mui/material/CardMedia';
 import { Button } from "@mui/material";
 import { useState } from "react";
 
-function handleLeave(id, user, myGredDetails, setDisableDelete, setMyGredDetails) {
-    setDisableDelete(true);
-    fetch("http://localhost:4000/greds/join", {
-        method: "POST",
+function handleLeave(gred, user, allGreds, setAllGreds, setDisable) {
+    setDisable(true);
+    fetch("http://localhost:4000/greds/leave", {
+        method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "id": String(id),
+            "id": String(gred._id),
             "user": String(user),
         },
     })
         .then(
             (res) => {
                 if (res.ok) {
-                    let newGredDetails = new Array();
-                    for (let i = 0; i < myGredDetails.length; i++) {
-                        if (myGredDetails[i]._id !== id) {
-                            newGredDetails.push(myGredDetails[i]);
+                    let finalJoinedList = new Array();
+                    for (let i = 0; i < allGreds.joinedList.length; i++) {
+                        if (allGreds.joinedList[i] !== gred) {
+                            finalJoinedList.push(allGreds.joinedList[i]);
                         }
                     }
-                    console.log(myGredDetails);
-                    setMyGredDetails(newGredDetails);
-                    setDisableDelete(false);
+                    let finalBlockedList = new Array(allGreds.blockedList.length + 1);
+                    for (let i = 0; i < allGreds.blockedList.length; i++) {
+                        finalBlockedList[i] = allGreds.blockedList[i];
+                    }
+                    finalBlockedList[finalBlockedList.length - 1] = gred;
+                    setAllGreds({
+                        ...allGreds,
+                        joinedList: finalJoinedList,
+                        blockedList: finalBlockedList,
+                    })
+                    setDisable(false);
                 }
             });
 
 }
 
-function Gred({ gred, userDetails, myGredDetails, setMyGredDetails, status }) {
-    const [disableDelete, setDisableDelete] = useState(false);
-    console.log("re-render");
+function handleJoin(gred, user, allGreds, setAllGreds, setDisable) {
+    setDisable(true);
+    fetch("http://localhost:4000/greds/join", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "id": String(gred._id),
+            "user": String(user),
+        },
+    })
+        .then(
+            (res) => {
+                if (res.ok) {
+                    let finalOthersList = new Array();
+                    for (let i = 0; i < allGreds.othersList.length; i++) {
+                        if (allGreds.othersList[i] !== gred) {
+                            finalOthersList.push(allGreds.othersList[i]);
+                        }
+                    }
+
+                    let finalPendingList = new Array(allGreds.pendingList.length + 1);
+                    for (let i = 0; i < allGreds.pendingList.length; i++) {
+                        finalPendingList[i] = allGreds.pendingList[i];
+                    }
+                    finalPendingList[finalPendingList.length - 1] = gred;
+                    setAllGreds({
+                        ...allGreds,
+                        pendingList: finalPendingList,
+                        othersList: finalOthersList,
+                    });
+                    setDisable(false);
+                }
+            });
+
+}
+
+function Gred({ gred, userDetails, allGreds, setAllGreds, status }) {
+    const [disable, setDisable] = useState(userDetails.subGreds.includes(gred._id));
     return (
         <Grid item xs={6} md={12}>
             <CardActionArea component="a">
@@ -60,12 +103,14 @@ function Gred({ gred, userDetails, myGredDetails, setMyGredDetails, status }) {
                         alt={gred.imageLabel}
                     />}
                     <CardContent>
-                        {status === "joined" && <Button variant="contained" style={{ backgroundColor: "red" }} disabled={disableDelete} onClick={() => { handleLeave(gred._id, userDetails._id, myGredDetails, setDisableDelete, setMyGredDetails) }}>LEAVE</Button>}
-                    </CardContent>
+                        {status === "joined" && <Button variant="contained" style={{ backgroundColor: "red" }} disabled={disable} onClick={() => { handleLeave(gred, userDetails._id, allGreds, setAllGreds, setDisable) }}>LEAVE</Button>}
+                        {status === "pending" && <Button variant="contained" style={{ backgroundColor: "green" }} disabled={false} > PENDING...</Button>}
+                    {status === "others" && <Button variant="contained" disabled={disable} onClick={() => { handleJoin(gred, userDetails._id, allGreds, setAllGreds, setDisable) }}>JOIN</Button>}
+                </CardContent>
 
-                </Card>
-            </CardActionArea>
-        </Grid>
+            </Card>
+        </CardActionArea>
+        </Grid >
     );
 }
 

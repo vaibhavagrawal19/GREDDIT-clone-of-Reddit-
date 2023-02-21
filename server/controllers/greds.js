@@ -1,5 +1,6 @@
 const Gred = require("../models/Gred");
 const User = require("../models/User");
+const Post = require("../models/Post");
 const asyncHandler = require("express-async-handler");
 
 const getAllGreds = asyncHandler(async (req, res) => {
@@ -26,7 +27,7 @@ const createNewGred = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "InCompleteInfo" });
     }
 
-    const gredObject = { user, title, desc, bannedWords, tags };
+    const gredObject = { user, title, desc, bannedWords, tags, allowedUsers: [user] };
 
     const gred = await Gred.create(gredObject);
 
@@ -44,7 +45,7 @@ const createNewGred = asyncHandler(async (req, res) => {
 const deleteGred = asyncHandler(async (req, res) => {
     const id = req.get("id");
     const user = req.get("user");
-    if (!id || !user ) {
+    if (!id || !user) {
         return res.status(400).json({ message: "InCompleteInfo" });
     }
 
@@ -65,19 +66,87 @@ const deleteGred = asyncHandler(async (req, res) => {
 
 const list = asyncHandler(async (req, res) => {
     const { ids } = req.body;
-    if (ids === "all") {
-        // fetch all the ids
-        const gredsList = await Gred.find().lean().exec();
-        return res.status(200).json({ gredsList });
+    let gredsList = new Array(ids.length);
+    for (let i = 0; i < ids.length; i++) {
+        let gred = await Gred.findById(ids[i]).lean().exec();
+        gredsList[i] = gred;
     }
-    else {
-        let gredsList = new Array(ids.length);
-        for (let i = 0; i < ids.length; i++) {
-            let gred = await Gred.findById(ids[i]).lean().exec();
-            gredsList[i] = gred;
+    return res.status(200).json({ gredsList });
+});
+
+const listAll = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const gredsList = await Gred.find().lean();
+    let joinedList = new Array();
+    let othersList = new Array();
+    let pendingList = new Array();
+    let blockedList = new Array();
+    for (let i = 0; i < gredsList.length; i++) {
+        if (gredsList[i].allowedUsers.includes(String(user))) {
+            joinedList.push(gredsList[i]);
         }
-        return res.status(200).json({ gredsList });
+        else if (gredsList[i].pendingUsers.includes(String(user))) {
+            pendingList.push(gredsList[i]);
+        }
+        else if (gredsList[i].blockedUsers.includes(String(user))) {
+            blockedList.push(gredsList[i]);
+        }
+        else {
+            othersList.push(gredsList[i]);
+        }
     }
+    return res.status(200).json({ joinedList, othersList, pendingList, blockedList });
+});
+
+const leave = asyncHandler(async (req, res) => {
+    const id = req.get("id");
+    const user = req.get("user");
+    if (!id || !user) {
+        return res.status(400).json({ message: "InCompleteInfo" });
+    }
+
+    let gred = await Gred.findById(id).exec();
+
+    for (let i = 0; i < gred.allowedUsers.length; i++) {
+        if (gred.allowedUsers[i] === user) {
+            gred.allowedUsers.splice(i, 1);
+            gred.blockedUsers.push(user);
+            break;
+        }
+    }
+    await gred.save();
+    
+    return res.status(204).json({ message: "Success!" });
+});
+
+const join = asyncHandler(async (req, res) => {
+    const id = req.get("id");
+    const user = req.get("user");
+    if (!id || !user) {
+        return res.status(400).json({ message: "InCompleteInfo" });
+    }
+
+    let gred = await Gred.findById(id).exec();
+
+    gred.pendingUsers.push(user);
+
+    await gred.save();
+
+    return res.status(200).json({ message: "Success!" });
+});
+
+const getOneGred = asyncHandler(async (req, res) => {
+    const id = req.get("id");
+    console.log("gred id obtained from client: " + id);
+    console.log("user id obtained from client: " + req.user);
+    const user = req.user;
+    const gred = await Gred.findById(id).exec();
+    const postDetails = new Array();
+    for (let i = 0; i < gred.posts.length; i++) {
+        post = await Post.findById(gred.posts[i]);
+        postDetails.push(post);
+    }
+    return res.status(200).json({ gred, postDetails });
 });
 
 module.exports = {
@@ -85,4 +154,8 @@ module.exports = {
     createNewGred,
     deleteGred,
     list,
+    listAll,
+    leave,
+    join,
+    getOneGred,
 };
