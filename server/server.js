@@ -12,6 +12,7 @@ app.use("/", require("./routes/root"));
 app.use("/auth", require("./routes/auth"));
 app.use("/users", require("./routes/users"));
 app.use("/greds", require("./routes/greds"));
+app.use("/posts", require("./routes/posts"));
 
 app.all("*", (req, res) => {
     res.status(404);

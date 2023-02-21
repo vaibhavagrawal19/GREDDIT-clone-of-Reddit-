@@ -23,16 +23,18 @@ import { NoEncryption } from '@mui/icons-material';
 import { useNavigate } from "react-router";
 import Diversity2Icon from '@mui/icons-material/Diversity2';
 
-export default function CreatePost({ userDetails, setMyGredDetails, setOpenForm }) {
+export default function CreatePost({ currGredDetails, setOpenForm }) {
+    console.log(currGredDetails);
     const [buttonEnable, setButtonEnable] = useState(true);
     const [state, setState] = useState({
-        name: "",
+        title: "",
         desc: "",
-        bannedWords: "",
-        tags: "",
     });
     function handleSubmit(event) {
-        setButtonEnable(false);
+        // setButtonEnable(false);
+        console.log(currGredDetails.gred._id);
+        console.log(state.title);
+        console.log(state.desc);
         event.preventDefault();
         fetch("http://localhost:4000/posts/", {
             method: "POST",
@@ -41,7 +43,8 @@ export default function CreatePost({ userDetails, setMyGredDetails, setOpenForm 
                 "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
             },
             body: JSON.stringify({
-                title: state.name,
+                id: String(currGredDetails.gred._id),
+                title: state.title,
                 desc: state.desc,
             }),
         })

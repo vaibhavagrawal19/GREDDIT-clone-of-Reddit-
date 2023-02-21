@@ -221,7 +221,7 @@ function Content({ currGredDetails }) {
                         </center>
                     </Container>
 
-                    {openForm ? <CreatePost /> : <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                    {openForm ? <CreatePost currGredDetails={currGredDetails} setOpenForm={setOpenForm} /> : <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                         <Grid container spacing={3}>
                             {currGredDetails.postDetails.map((post) => (
                                 <Grid item xs={12} md={8} lg={12}>
