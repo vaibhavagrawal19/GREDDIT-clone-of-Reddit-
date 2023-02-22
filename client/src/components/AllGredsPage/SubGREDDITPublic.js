@@ -30,6 +30,8 @@ import CardContent from '@mui/material/CardContent';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
 import TextField from '@mui/material/TextField';
+import Diversity2Icon from '@mui/icons-material/Diversity2';
+import Avatar from '@mui/material/Avatar';
 
 const drawerWidth = 240;
 
@@ -153,17 +155,142 @@ function ReportForm({ post, setReports }) {
             </Button>
         </Box>
     );
+};
+
+function CreatePost({ currGredDetails, setOpenForm, setCurrGredDetails }) {
+    console.log(currGredDetails);
+    const [buttonEnable, setButtonEnable] = useState(true);
+    const [state, setState] = useState({
+        title: "",
+        desc: "",
+    });
+    function handleSubmit(event) {
+        // setButtonEnable(false);
+        console.log(currGredDetails.gred._id);
+        console.log(state.title);
+        console.log(state.desc);
+        event.preventDefault();
+        fetch("http://localhost:4000/posts/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+            },
+            body: JSON.stringify({
+                id: String(currGredDetails.gred._id),
+                title: state.title,
+                desc: state.desc,
+            }),
+        })
+            .then(
+                (res) => {
+                    if (res.ok) {
+                        res.json().then((body) => {
+                            setButtonEnable(true);
+                            setOpenForm(false);
+                            setCurrGredDetails(currGredDetails.gred._id);
+                        });
+                    }
+                    else {
+                        console.log(res);
+                        return;
+                    }
+                }
+            )
+    }
+
+    function handleChange(event) {
+        event.preventDefault();
+        setState({
+            ...state,
+            [event.target.name]: event.target.value,
+        });
+    }
+    return (
+        <Box
+            component="main"
+            sx={{
+                backgroundColor: (theme) =>
+                    theme.palette.mode === 'light'
+                        ? theme.palette.grey[100]
+                        : theme.palette.grey[900],
+                flexGrow: 1,
+                height: '100vh',
+                overflow: 'auto',
+            }}
+        >
+            <Toolbar />
+            <Toolbar />
+            <Container maxWidth="lg">
+                <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+                    <Box
+                        sx={{
+                            my: 8,
+                            mx: 4,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+                            <Diversity2Icon />
+                        </Avatar>
+                        <Typography component="h1" variant="h5">
+                            Post Something
+                        </Typography>
+                        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                            <TextField
+                                onChange={handleChange}
+                                value={state.name}
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="title"
+                                label="Title"
+                                name="title"
+                                autoComplete="title"
+                                autoFocus
+                            />
+                            <TextField
+                                onChange={handleChange}
+                                value={state.desc}
+                                margin="normal"
+                                required
+                                fullWidth
+                                multiline
+                                rows={5}
+                                maxRows={5}
+                                id="desc"
+                                label="Description"
+                                name="desc"
+                                autoComplete="desc"
+                            />
+                            <Button
+                                disabled={!buttonEnable}
+                                onClick={handleSubmit}
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                sx={{ mt: 3, mb: 2 }}
+                            >
+                                Create!
+                            </Button>
+                            <Grid container>
+                                <Grid item xs>
+                                    <p style={{ color: "red" }}>
+                                        {state.errorText}
+                                    </p>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </Box>
+                </Grid>
+            </Container>
+        </Box>
+    )
 }
 
-const mdTheme = createTheme();
-
-function Content({ currGredDetails, setCurrGredDetails, setUserDetails }) {
-    const navigate = useNavigate();
-    const [open, setOpen] = React.useState(true);
-    const toggleDrawer = () => {
-        setOpen(!open);
-    };
-    const [openForm, setOpenForm] = useState(false);
+function AllPosts({ setOpenForm, currGredDetails }) {
     let reportsArr = new Array(currGredDetails.gred.posts.length).fill(false);
     const [reports, setReports] = useState(reportsArr);
 
@@ -176,6 +303,76 @@ function Content({ currGredDetails, setCurrGredDetails, setUserDetails }) {
         newReportStatus[postIndex] = !reports[postIndex];
         setReports(newReportStatus);
     }
+    return (
+        < Box
+            component="main"
+            sx={{
+                backgroundColor: (theme) =>
+                    theme.palette.mode === 'light'
+                        ? theme.palette.grey[100]
+                        : theme.palette.grey[900],
+                flexGrow: 1,
+                height: '100vh',
+                overflow: 'auto',
+            }
+            }
+        >
+            <Toolbar />
+            <Toolbar />
+            <Container>
+                <center>
+                    <Button variant="contained" onClick={() => {
+                        setOpenForm(true);
+                    }}>Post something!</Button>
+                </center>
+            </Container>
+            <Toolbar />
+            <Container maxWidth="lg">
+                <Grid container spacing={4}>
+                    {currGredDetails.postDetails.map((post) => (
+                        <Grid item xs={6} md={12}>
+
+                            <Card sx={{ display: 'flex' }}>
+                                <CardContent sx={{ flex: 1 }}>
+                                    <Typography component="h2" variant="h5">
+                                        {post.title}
+                                    </Typography>
+                                    <Typography variant="subtitle1" color="text.secondary">
+                                        by {post.username}
+                                    </Typography>
+                                    <Toolbar />
+                                    <Typography variant="subtitle1" paragraph>
+                                        {post.desc}
+                                    </Typography>
+                                </CardContent>
+                                <CardContent>
+                                    <Button variant="contained" disabled={false}>FOLLOW</Button>
+                                    <Button variant="contained" disabled={false} style={{ backgroundColor: "red" }} onClick={() => { handleReport(setReports, reports, currGredDetails, post) }}>REPORT</Button>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardContent>
+                                    {reports[currGredDetails.gred.posts.indexOf(post._id)] === true && <ReportForm post={post} />}
+                                    {reports[currGredDetails.gred.posts.indexOf(post._id)] === "submitted" && <p style={{ color: "red" }}>Report submitted successfully!</p>}
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
+            </Container>
+        </Box >
+    );
+}
+
+const mdTheme = createTheme();
+
+function Content({ currGredDetails, setCurrGredDetails, setUserDetails }) {
+    const navigate = useNavigate();
+    const [open, setOpen] = React.useState(true);
+    const toggleDrawer = () => {
+        setOpen(!open);
+    };
+    const [openForm, setOpenForm] = useState(false);
 
     return (
         <ThemeProvider theme={mdTheme}>
@@ -272,66 +469,7 @@ function Content({ currGredDetails, setCurrGredDetails, setUserDetails }) {
                         </ListItemButton>
                     </List>
                 </Drawer>
-                <Box
-                    component="main"
-                    sx={{
-                        backgroundColor: (theme) =>
-                            theme.palette.mode === 'light'
-                                ? theme.palette.grey[100]
-                                : theme.palette.grey[900],
-                        flexGrow: 1,
-                        height: '100vh',
-                        overflow: 'auto',
-                    }}
-                >
-
-                    {
-                        (<div>
-                            <Toolbar />
-                            <Toolbar />
-                            <Container>
-                                <center>
-                                    <Button variant="contained" onClick={() => {
-                                        setOpenForm(true);
-                                    }}>Post something!</Button>
-                                </center>
-                            </Container>
-                            <Toolbar />
-                            <Container maxWidth="lg">
-                                <Grid container spacing={4}>
-                                    {currGredDetails.postDetails.map((post) => (
-                                        <Grid item xs={6} md={12}>
-
-                                            <Card sx={{ display: 'flex' }}>
-                                                <CardContent sx={{ flex: 1 }}>
-                                                    <Typography component="h2" variant="h5">
-                                                        {post.title}
-                                                    </Typography>
-                                                    <Typography variant="subtitle1" color="text.secondary">
-                                                        by {post.username}
-                                                    </Typography>
-                                                    <Toolbar />
-                                                    <Typography variant="subtitle1" paragraph>
-                                                        {post.desc}
-                                                    </Typography>
-                                                </CardContent>
-                                                <CardContent>
-                                                    <Button variant="contained" disabled={false}>FOLLOW</Button>
-                                                    <Button variant="contained" disabled={false} style={{ backgroundColor: "red" }} onClick={() => { handleReport(setReports, reports, currGredDetails, post) }}>REPORT</Button>
-                                                </CardContent>
-                                            </Card>
-                                            <Card>
-                                                <CardContent>
-                                                    {reports[currGredDetails.gred.posts.indexOf(post._id)] === true && <ReportForm post={post} />}
-                                                    {reports[currGredDetails.gred.posts.indexOf(post._id)] === "submitted" && <p style={{color: "red"}}>Report submitted successfully!</p>}
-                                                </CardContent>
-                                            </Card>
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            </Container>
-                        </div>)}
-                </Box>
+                {openForm === false ? <AllPosts setOpenForm={setOpenForm} currGredDetails={currGredDetails} /> : <CreatePost currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} setOpenForm={setOpenForm} />}
             </Box>
         </ThemeProvider>
     );
