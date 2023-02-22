@@ -85,6 +85,42 @@ function Content({ currGredDetails, setCurrGredDetails }) {
     };
     const [openForm, setOpenForm] = useState(false);
 
+    function handleIgnore(report, currGredDetails) {
+        console.log("came here!");
+        fetch("http://localhost:4000/posts/ignore", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                "id": String(report.post._id),
+            },
+        })
+            .then(
+                (res) => {
+                    let currGredDetails_ = { ...currGredDetails };
+                    if (res.ok) {
+                        console.log("here");
+                        for (let i = 0; i < currGredDetails_.reportedList.length; i++) {
+                            console.log(currGredDetails_.reportedList[i].report === report);
+                            console.log(i);
+
+                            if (currGredDetails_.reportedList[i] === report) {
+                                console.log("about to remove from frontend!");
+                                currGredDetails_.reportedList.splice(i, 1);
+                                break;
+                            }
+                        }
+                        res.json().then(
+                            (body) => {
+                                currGredDetails_.gred = body.gredObj;
+                                setCurrGredDetails(currGredDetails_);
+                            }
+                        )
+                    }
+                }
+            );
+    }
+
 
     function handleDelete(report, currGredDetails) {
         fetch("http://localhost:4000/posts", {
@@ -101,7 +137,7 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                     console.log("here");
                     if (res.ok) {
                         for (let i = 0; i < currGredDetails_.reportedList.length; i++) {
-                            if (currGredDetails_.reportedList[i].report === report) {
+                            if (currGredDetails_.reportedList[i] === report) {
                                 currGredDetails_.reportedList.splice(i, 1);
                                 break;
                             }
@@ -274,14 +310,24 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                                                     event.target.disabled = true;
                                                     event.preventDefault();
                                                     console.log("here");
-                                                    handleDelete(report, currGredDetails)
+                                                    handleDelete(report, currGredDetails);
                                                     event.target.disabled = false;
                                                 }
                                             } style={{ backgroundColor: "red" }} variant="contained" disabled={false}>DELETE POST</Button>
                                             <Button onClick={
                                                 (event) => {
+                                                    event.target.disabled = true;
                                                     event.preventDefault();
+                                                    console.log("here");
+                                                    handleIgnore(report, currGredDetails);
+                                                    event.target.disabled = false;
                                                 }} variant="contained" disabled={false}>IGNORE</Button>
+                                            <Button onClick={
+                                                (event) => {
+
+                                                }
+                                            } style={{ backgroundColor: "red" }} variant="contained" disabled={false}>BLOCK USER</Button>
+
                                         </CardContent>
                                     </Card>
                                 </Grid>

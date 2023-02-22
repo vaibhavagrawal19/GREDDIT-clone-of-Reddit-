@@ -10,4 +10,7 @@ router.route("/")
 router.route("/report")
     .post(verifyJWT, postsController.reportPost);
 
+router.route("/ignore")
+    .get(verifyJWT, postsController.ignorePost);
+    
 module.exports = router;

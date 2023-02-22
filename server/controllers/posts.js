@@ -3,6 +3,35 @@ const User = require("../models/User");
 const Post = require("../models/Post");
 const asyncHandler = require("express-async-handler");
 
+const ignorePost = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const id = req.get("id");
+
+    const postObj = await Post.findById(String(id)).exec();
+    const gredObj = await Gred.findById(String(postObj.gred)).exec();
+    if (String(gredObj.user) !== user) {
+        // only the owner of the gred can call this method
+        return res.status(401).json({ message: "Forbidden!" });
+    }
+    for (let i = 0; i < gredObj.reports.length; i++) {
+        if (String(gredObj.reports[i]) === String(id)) {
+            // remove from the reported items
+            // console.log("about to remove from gred report list");
+            gredObj.reports.splice(i, 1);
+            break;
+        }
+    }
+
+    // console.log("about to edit post");
+    postObj.reporter = "None",
+    postObj.report = "",
+
+    await postObj.save();
+    await gredObj.save();
+
+    return res.status(200).json({ gredObj });
+})
+
 const createPost = asyncHandler(async (req, res) => {
     const user = req.user;
     const { id, title, desc } = req.body;
@@ -78,4 +107,5 @@ module.exports = {
     createPost,
     reportPost,
     deletePost,
+    ignorePost,
 };
