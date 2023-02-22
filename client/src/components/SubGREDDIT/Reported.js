@@ -86,16 +86,13 @@ function Content({ currGredDetails, setCurrGredDetails }) {
     const [openForm, setOpenForm] = useState(false);
 
 
-    function accept(user) {
-        console.log(user);
-        fetch("http://localhost:4000/greds/joinreqaction", {
-            method: "GET",
+    function handleDelete(report, currGredDetails) {
+        fetch("http://localhost:4000/posts", {
+            method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
                 "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
-                "id": String(currGredDetails.gred._id),
-                "username": String(user.username),
-                "action": "accept",
+                "id": String(report.post._id),
             },
         })
             .then(
@@ -103,56 +100,26 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                     let currGredDetails_ = { ...currGredDetails };
                     console.log("here");
                     if (res.ok) {
-                        for (let i = 0; i < currGredDetails_.pendingUserdata.length; i++) {
-                            if (currGredDetails_.pendingUserdata[i] === user.username) {
-                                currGredDetails_.pendingUserdata.splice(i, 1);
+                        for (let i = 0; i < currGredDetails_.reportedList.length; i++) {
+                            if (currGredDetails_.reportedList[i].report === report) {
+                                currGredDetails_.reportedList.splice(i, 1);
                                 break;
                             }
                         }
 
-                        for (let i = 0; i < currGredDetails_.gred.pendingUsers.length; i++) {
-                            if (currGredDetails_.gred.pendingUsers[i] === user._id) {
-                                currGredDetails_.gred.pendingUsers.splice(i, 1);
-                                break;
-                            }
-                        }
-                        setCurrGredDetails(currGredDetails_);
-                    }
-                }
-            );
-    }
+                        // for (let i = 0; i < currGredDetails_.gred.pendingUsers.length; i++) {
+                        //     if (currGredDetails_.gred.pendingUsers[i] === user._id) {
+                        //         currGredDetails_.gred.pendingUsers.splice(i, 1);
+                        //         break;
+                        //     }
+                        // }
+                        res.json().then(
+                            (body) => {
+                                currGredDetails_.gred = body.gredObj;
+                                setCurrGredDetails(currGredDetails_);
 
-    function reject(user) {
-        console.log(user);
-        fetch("http://localhost:4000/greds/joinreqaction", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
-                "id": String(currGredDetails.gred._id),
-                "username": String(user.username),
-                "action": "reject",
-            },
-        })
-            .then(
-                (res) => {
-                    let currGredDetails_ = { ...currGredDetails };
-                    console.log("here");
-                    if (res.ok) {
-                        for (let i = 0; i < currGredDetails_.pendingUserdata.length; i++) {
-                            if (currGredDetails_.pendingUserdata[i] === user.username) {
-                                currGredDetails_.pendingUserdata.splice(i, 1);
-                                break;
                             }
-                        }
-
-                        for (let i = 0; i < currGredDetails_.gred.pendingUsers.length; i++) {
-                            if (currGredDetails_.gred.pendingUsers[i] === user._id) {
-                                currGredDetails_.gred.pendingUsers.splice(i, 1);
-                                break;
-                            }
-                        }
-                        setCurrGredDetails(currGredDetails_);
+                        )
                     }
                 }
             );
@@ -304,13 +271,17 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                                             <Toolbar />
                                             <Button onClick={
                                                 (event) => {
+                                                    event.target.disabled = true;
                                                     event.preventDefault();
+                                                    console.log("here");
+                                                    handleDelete(report, currGredDetails)
+                                                    event.target.disabled = false;
                                                 }
-                                            } variant="contained" disabled={false}>IGNORE</Button>
+                                            } style={{ backgroundColor: "red" }} variant="contained" disabled={false}>DELETE POST</Button>
                                             <Button onClick={
                                                 (event) => {
                                                     event.preventDefault();
-                                                }} variant="contained" style={{ backgroundColor: "red" }} disabled={false}>DELETE POST</Button>
+                                                }} variant="contained" disabled={false}>IGNORE</Button>
                                         </CardContent>
                                     </Card>
                                 </Grid>

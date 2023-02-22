@@ -267,6 +267,7 @@ export default function SubGREDDIT({ currGredDetails, setCurrGredDetails }) {
     }
 
     if (currGredDetails.postDetails) {
+        console.log(currGredDetails.postDetails)
         return <Content currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />;
     }
 

@@ -4,14 +4,10 @@ const postsController = require("../controllers/posts")
 const verifyJWT = require("../middleware/verifyJWT");
 
 router.route("/")
-    // .get(postsController.getAllposts)
     .post(verifyJWT, postsController.createPost)
+    .delete(verifyJWT, postsController.deletePost);
 
 router.route("/report")
     .post(verifyJWT, postsController.reportPost);
-    
-// router.route("/list")
-    // .post(postsController.list)
-    // .get(postsController.listAll);
 
 module.exports = router;
