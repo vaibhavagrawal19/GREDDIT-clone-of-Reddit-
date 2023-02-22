@@ -122,7 +122,39 @@ function Content({ currGredDetails, setCurrGredDetails }) {
     }
 
     function reject(user) {
+        console.log(user);
+        fetch("http://localhost:4000/greds/joinreqaction", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                "id": String(currGredDetails.gred._id),
+                "username": String(user.username),
+                "action": "reject",
+            },
+        })
+            .then(
+                (res) => {
+                    let currGredDetails_ = { ...currGredDetails };
+                    console.log("here");
+                    if (res.ok) {
+                        for (let i = 0; i < currGredDetails_.pendingUserdata.length; i++) {
+                            if (currGredDetails_.pendingUserdata[i] === user.username) {
+                                currGredDetails_.pendingUserdata.splice(i, 1);
+                                break;
+                            }
+                        }
 
+                        for (let i = 0; i < currGredDetails_.gred.pendingUsers.length; i++) {
+                            if (currGredDetails_.gred.pendingUsers[i] === user._id) {
+                                currGredDetails_.gred.pendingUsers.splice(i, 1);
+                                break;
+                            }
+                        }
+                        setCurrGredDetails(currGredDetails_);
+                    }
+                }
+            );
     }
 
     console.log(currGredDetails.pendingUserdata);
