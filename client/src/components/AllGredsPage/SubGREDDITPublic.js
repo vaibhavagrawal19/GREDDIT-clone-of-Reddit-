@@ -98,7 +98,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 );
 
-function ReportForm({ post, setReports }) {
+function ReportForm({ currGredDetails, post, setReports, reports }) {
     const [state, setState] = useState({
         desc: "",
     });
@@ -110,23 +110,24 @@ function ReportForm({ post, setReports }) {
         });
     }
     function handleSubmit(post) {
+        let postIndex = currGredDetails.gred.posts.indexOf(String(post._id));
+        let newReportStatus = new Array(reports.length);
+        for (let i = 0; i < newReportStatus; i++) {
+            newReportStatus[i] = reports[i];
+        }
+        newReportStatus[postIndex] = !reports[postIndex];
+        setReports(newReportStatus);
         fetch("http://localhost:4000/posts/report", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
                 "post": String(post._id),
             },
             body: JSON.stringify({
                 desc: state.desc,
             }),
         })
-            .then(
-                (res) => {
-                    if (res.ok) {
-                        setReports("submitted");
-                    }
-                }
-            )
     }
     return (
         <Box component="form" noValidate sx={{ mt: 1 }}>
@@ -144,7 +145,7 @@ function ReportForm({ post, setReports }) {
                 autoComplete="report"
             />
             <Button
-                onClick={() => { handleSubmit(post) }}
+                onClick={(event) => { event.preventDefault(); handleSubmit(post) }}
                 disabled={false}
                 type="submit"
                 fullWidth
@@ -165,7 +166,7 @@ function CreatePost({ currGredDetails, setOpenForm, setCurrGredDetails }) {
         desc: "",
     });
     function handleSubmit(event) {
-        // setButtonEnable(false);
+        event.preventDefault();
         console.log(currGredDetails.gred._id);
         console.log(state.title);
         console.log(state.desc);
@@ -352,7 +353,7 @@ function AllPosts({ setOpenForm, currGredDetails }) {
                             </Card>
                             <Card>
                                 <CardContent>
-                                    {reports[currGredDetails.gred.posts.indexOf(post._id)] === true && <ReportForm post={post} />}
+                                    {reports[currGredDetails.gred.posts.indexOf(post._id)] === true && <ReportForm currGredDetails={currGredDetails} post={post} setReports={setReports} reports={reports} />}
                                     {reports[currGredDetails.gred.posts.indexOf(post._id)] === "submitted" && <p style={{ color: "red" }}>Report submitted successfully!</p>}
                                 </CardContent>
                             </Card>

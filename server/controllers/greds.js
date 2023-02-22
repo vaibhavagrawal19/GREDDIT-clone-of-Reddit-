@@ -199,7 +199,8 @@ const getReported = asyncHandler(async (req, res) => {
     let postDetails = new Array();
     for (let i = 0; i < gred.reports.length; i++) {
         const post = await Post.findById(gred.reports[i]).lean().exec();
-        postDetails.push(post);
+        const whoReported = await User.findById(String(post.reporter)).lean().exec();
+        postDetails.push({ whoReported, post });
     }
     return res.status(200).json({ reports: postDetails });
 })

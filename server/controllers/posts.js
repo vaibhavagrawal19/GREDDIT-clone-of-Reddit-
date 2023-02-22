@@ -6,9 +6,6 @@ const asyncHandler = require("express-async-handler");
 const createPost = asyncHandler(async (req, res) => {
     const user = req.user;
     const { id, title, desc } = req.body;
-    console.log(id);
-    console.log(title);
-    console.log()
     if (!id || !title || !desc) {
         return res.status(403).json({ message: "IncompleteInfo" });
     }
@@ -33,16 +30,21 @@ const createPost = asyncHandler(async (req, res) => {
 });
 
 const reportPost = asyncHandler(async (req, res) => {
+    console.log("here");
     const user = req.user;
     const post = req.get("post");
     const desc = req.body.desc;
-    const postObj = Post.findById(post).exec();
-    const gred = Gred.findById(String(post.gred)).lean().exec();
-    if (!gred.allowedUsers.include(String(user))) {
+    const postObj = await Post.findById(String(post)).exec();
+    console.log(String(postObj.gred));
+    const gred = await Gred.findById(String(postObj.gred)).exec();
+    if (!gred.allowedUsers.includes(String(user))) {
         return res.status(403).json({ message: "Forbidden!" });
     }
-    post.reporter = String(user);
-    post.report = String(desc);
+    postObj.reporter = String(user);
+    postObj.report = String(desc);
+    gred.reports.push(post);
+    await postObj.save();
+    await gred.save();
     return res.status(200).json({ message: "Reported!" });
 });
 

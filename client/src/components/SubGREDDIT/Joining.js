@@ -241,7 +241,7 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                             <ListItemText primary="Stats" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
-                            localStorage.removeItem("refreshToken");
+                            navigate("/mygreds/gred/reports");
                         }
                         }>
                             <ListItemIcon>

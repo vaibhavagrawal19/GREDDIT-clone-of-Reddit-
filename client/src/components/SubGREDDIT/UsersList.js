@@ -19,7 +19,7 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { Navigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ReportIcon from '@mui/icons-material/Report';
@@ -82,6 +82,7 @@ function Content({ currGredDetails, setCurrGredDetails }) {
     const toggleDrawer = () => {
         setOpen(!open);
     };
+    const navigate = useNavigate();
     const [openForm, setOpenForm] = useState(false);
 
     console.log(currGredDetails.pendingUserdata);
@@ -146,13 +147,17 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                     <List component="nav">
 
 
-                        <ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/mygreds/gred/users");
+                        }}>
                             <ListItemIcon>
                                 <PeopleIcon />
                             </ListItemIcon>
                             <ListItemText primary="Users" />
                         </ListItemButton>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/mygreds/gred/joinReq");
+                        }}>
                             <ListItemIcon>
                                 <AssignmentIndIcon />
                             </ListItemIcon>
@@ -165,9 +170,8 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                             <ListItemText primary="Stats" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
-                            localStorage.removeItem("refreshToken");
-                        }
-                        }>
+                            navigate("/mygreds/gred/reports");
+                        }}>
                             <ListItemIcon>
                                 <ReportIcon />
                             </ListItemIcon>
@@ -213,7 +217,7 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                                             <h1>Users</h1>
                                             {/* <Chart /> */}
                                             <ul>
-                                                {currGredDetails.allowedUserData.map((user) => (
+                                                {currGredDetails.gred.allowedUsers.length > 0 && currGredDetails.allowedUserData.map((user) => (
                                                     <li>{user.username}</li>
                                                 ))}
                                             </ul>
@@ -229,10 +233,10 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                                                 flexDirection: 'column',
                                                 height: "auto",
                                             }}
-                                        >   
+                                        >
                                             <h1>Blocked Users</h1>
                                             <ul>
-                                                {currGredDetails.blockedUserData.map((user) => (
+                                                {currGredDetails.gred.blockedUsers.length > 0 && currGredDetails.blockedUserData.map((user) => (
                                                     <li>{user.username}</li>
                                                 ))}
                                             </ul>
@@ -248,18 +252,17 @@ function Content({ currGredDetails, setCurrGredDetails }) {
 }
 
 export default function UsersList({ currGredDetails, setCurrGredDetails }) {
-    console.log("me");
     if (!currGredDetails) {
         return <Navigate to="/" />;
     }
 
-    if (currGredDetails.gred.allowedUsers.length === 0) {
+    if (!currGredDetails.allowedUserData && currGredDetails.gred.allowedUsers.length === 0) {
         setCurrGredDetails({
             ...currGredDetails,
             allowedUserData: true,
         });
     }
-    if (currGredDetails.gred.blockedUsers.length === 0) {
+    if (!currGredDetails.blockedUserData && currGredDetails.gred.blockedUsers.length === 0) {
         setCurrGredDetails({
             ...currGredDetails,
             blockedUserData: true,

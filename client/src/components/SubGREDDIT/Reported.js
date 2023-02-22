@@ -158,8 +158,7 @@ function Content({ currGredDetails, setCurrGredDetails }) {
             );
     }
 
-    console.log(currGredDetails.pendingUserdata);
-
+    console.log(currGredDetails.reportedList);
     return (
         <ThemeProvider theme={mdTheme}>
             <Box sx={{ display: 'flex' }}>
@@ -271,40 +270,54 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                     }}
                 >
 
-                    {
-                        (<div>
-                            <Toolbar />
-                            <Toolbar />
-                            <Toolbar />
-                            <Container maxWidth="lg">
-                                <Grid container spacing={4}>
-                                    {currGredDetails.gred.reports.length > 0 && currGredDetails.reportedList.map((post) => (
-                                        <Grid item xs={6} md={12}>
-                                            <Card sx={{ display: 'flex' }}>
-                                                <CardContent sx={{ flex: 1 }}>
-                                                    <Typography component="h2" variant="h5">
-                                                        {post.title}
-                                                    </Typography>
-                                                    <Typography component="h2" variant="subtitle1">
-                                                        {post.desc}
-                                                    </Typography>
-                                                </CardContent>
-                                                <CardContent>
-                                                    <Typography component="h2" variant="h5">
-                                                        Reported by: {post.reporter}
-                                                    </Typography>
-                                                    <Typography component="h2" variant="h5">
-                                                        Posted by: {post.username}
-                                                    </Typography>
-                                                    <Button onClick={() => { accept(user) }} variant="contained" style={{ backgroundColor: "green" }} disabled={false}>ACCEPT</Button>
-                                                    <Button onClick={() => { reject(user) }} variant="contained" style={{ backgroundColor: "red" }} disabled={false}>REJECT</Button>
-                                                </CardContent>
-                                            </Card>
-                                        </Grid>
-                                    ))}
+
+                    <Toolbar />
+                    <Toolbar />
+                    <Toolbar />
+                    <Container maxWidth="lg">
+                        <Grid container spacing={4}>
+                            {currGredDetails.gred.reports.length > 0 && currGredDetails.reportedList.map((report) => (
+                                <Grid item xs={6} md={12}>
+                                    <Card sx={{ display: 'flex' }}>
+                                        <CardContent sx={{ flex: 1 }}>
+                                            <Typography component="h2" variant="h5">
+                                                {report.post.title}
+                                            </Typography>
+                                            <Typography component="h2" variant="subtitle1">
+                                                {report.post.desc}
+                                            </Typography>
+                                            <Toolbar />
+                                            <Typography style={{ color: "red" }} component="h2" variant="h6">
+                                                Report:
+                                            </Typography>
+                                            <Typography style={{ color: "red" }} component="h2" variant="body2">
+                                                {report.post.report}
+                                            </Typography>
+                                        </CardContent>
+                                        <CardContent>
+                                            <Typography component="h2" variant="subtitle1">
+                                                Reported by: {report.whoReported.username}
+                                            </Typography>
+                                            <Typography component="h2" variant="subtitle1">
+                                                Post by: {report.post.username}
+                                            </Typography>
+                                            <Toolbar />
+                                            <Button onClick={
+                                                (event) => {
+                                                    event.preventDefault();
+                                                }
+                                            } variant="contained" disabled={false}>IGNORE</Button>
+                                            <Button onClick={
+                                                (event) => {
+                                                    event.preventDefault();
+                                                }} variant="contained" style={{ backgroundColor: "red" }} disabled={false}>DELETE POST</Button>
+                                        </CardContent>
+                                    </Card>
                                 </Grid>
-                            </Container>
-                        </div>)}
+                            ))}
+                        </Grid>
+                    </Container>
+
                 </Box>
             </Box>
         </ThemeProvider>

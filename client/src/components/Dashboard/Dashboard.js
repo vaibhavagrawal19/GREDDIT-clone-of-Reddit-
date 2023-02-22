@@ -238,6 +238,7 @@ function DashboardContent({ userDetails, setUserDetails }) {
 
 export default function Dashboard({ userDetails, setUserDetails }) {
     if (!localStorage.getItem("refreshToken")) {
+        setUserDetails(false);
         return <Navigate to="/" />;
     }
 
