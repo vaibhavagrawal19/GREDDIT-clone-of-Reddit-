@@ -115,7 +115,7 @@ const leave = asyncHandler(async (req, res) => {
         }
     }
     await gred.save();
-    
+
     return res.status(204).json({ message: "Success!" });
 });
 
@@ -135,10 +135,45 @@ const join = asyncHandler(async (req, res) => {
     return res.status(200).json({ message: "Success!" });
 });
 
+const respond = asyncHandler(async (req, res) => {
+    console.log("clicked!");
+    const id = req.get("id");
+    const username = req.get("username");
+    const action = req.get("action");
+    const user = req.user;
+
+    const gred = await Gred.findById(String(id)).exec();
+    if (!gred) {
+        return res.status(400);
+    }
+
+
+
+    if (String(gred.user) !== String(user)) {
+        return res.status(403);
+    }
+
+
+    const userObj = await User.findOne({ username }).lean().exec();
+    const userID = userObj._id;
+
+
+    let newPendingUsers = new Array();
+    for (let i = 0; i < gred.pendingUsers.length; i++) {
+        if (String(gred.pendingUsers[i]) !== String(userID)) {
+            newPendingUsers.push(gred.pendingUsers[i]);
+        }
+    }
+    gred.pendingUsers = newPendingUsers;
+    if (action === "accept") {
+        gred.allowedUsers.push(String(userID));
+    }
+    await gred.save();
+    return res.status(200).json({ user: String(userID) });
+});
+
 const getOneGred = asyncHandler(async (req, res) => {
     const id = req.get("id");
-    console.log("gred id obtained from client: " + id);
-    console.log("user id obtained from client: " + req.user);
     const user = req.user;
     const gred = await Gred.findById(id).exec();
     const postDetails = new Array();
@@ -158,4 +193,5 @@ module.exports = {
     leave,
     join,
     getOneGred,
+    respond,
 };

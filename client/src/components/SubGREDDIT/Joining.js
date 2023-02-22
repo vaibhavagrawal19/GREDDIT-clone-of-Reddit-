@@ -84,7 +84,48 @@ function Content({ currGredDetails, setCurrGredDetails }) {
     };
     const [openForm, setOpenForm] = useState(false);
 
-    console.log(currGredDetails.pendingUsernames);
+
+    function accept(user) {
+        console.log(user);
+        fetch("http://localhost:4000/greds/joinreqaction", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                "id": String(currGredDetails.gred._id),
+                "username": String(user.username),
+                "action": "accept",
+            },
+        })
+            .then(
+                (res) => {
+                    let currGredDetails_ = { ...currGredDetails };
+                    console.log("here");
+                    if (res.ok) {
+                        for (let i = 0; i < currGredDetails_.pendingUserdata.length; i++) {
+                            if (currGredDetails_.pendingUserdata[i] === user.username) {
+                                currGredDetails_.pendingUserdata.splice(i, 1);
+                                break;
+                            }
+                        }
+
+                        for (let i = 0; i < currGredDetails_.gred.pendingUsers.length; i++) {
+                            if (currGredDetails_.gred.pendingUsers[i] === user._id) {
+                                currGredDetails_.gred.pendingUsers.splice(i, 1);
+                                break;
+                            }
+                        }
+                        setCurrGredDetails(currGredDetails_);
+                    }
+                }
+            );
+    }
+
+    function reject(user) {
+
+    }
+
+    console.log(currGredDetails.pendingUserdata);
 
     return (
         <ThemeProvider theme={mdTheme}>
@@ -200,17 +241,17 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                             <Toolbar />
                             <Container maxWidth="lg">
                                 <Grid container spacing={4}>
-                                    {currGredDetails.pendingUsernames.map((user) => (
+                                    {currGredDetails.gred.pendingUsers.length > 0 && currGredDetails.pendingUserdata.map((user) => (
                                         <Grid item xs={6} md={12}>
                                             <Card sx={{ display: 'flex' }}>
                                                 <CardContent sx={{ flex: 1 }}>
                                                     <Typography component="h2" variant="h5">
-                                                        {user}
+                                                        {user.username}
                                                     </Typography>
                                                 </CardContent>
                                                 <CardContent>
-                                                    <Button variant="contained" style={{ backgroundColor: "green" }} disabled={false}>ACCEPT</Button>
-                                                    <Button variant="contained" style={{ backgroundColor: "red" }} disabled={false}>REJECT</Button>
+                                                    <Button onClick={() => { accept(user) }} variant="contained" style={{ backgroundColor: "green" }} disabled={false}>ACCEPT</Button>
+                                                    <Button onClick={() => { reject(user) }} variant="contained" style={{ backgroundColor: "red" }} disabled={false}>REJECT</Button>
                                                 </CardContent>
                                             </Card>
                                         </Grid>
@@ -229,40 +270,38 @@ export default function Joining({ currGredDetails, setCurrGredDetails }) {
         return <Navigate to="/" />;
     }
 
-    if (currGredDetails.pendingUsernames) {
+    if (currGredDetails.pendingUserdata || currGredDetails.gred.pendingUsers.length === 0) {
         return <Content currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />
     }
 
-    console.log(currGredDetails.gred.pendingUsers);
+    let pendingUserdata = new Array(currGredDetails.gred.pendingUsers.length);
+    for (let i = 0; i < currGredDetails.gred.pendingUsers.length; i++) {
+        fetch("http://localhost:4000/users/oneuser", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                "id": String(currGredDetails.gred.pendingUsers[i]),
+            },
 
-        let pendingUsernames = new Array(currGredDetails.gred.pendingUsers.length);
-        for (let i = 0; i < currGredDetails.gred.pendingUsers.length; i++) {
-            fetch("http://localhost:4000/users/oneuser", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
-                    "id": String(currGredDetails.gred.pendingUsers[i]),
-                },
-
-            })
-                .then(
-                    (res) => {
-                        if (res.ok) {
-                            res.json().then(
-                                (body) => {
-                                    pendingUsernames[i] = String(body.username);
-                                    if (i == pendingUsernames.length - 1) {
-                                        setCurrGredDetails({
-                                            ...currGredDetails,
-                                            pendingUsernames,
-                                        });
-                                    }
+        })
+            .then(
+                (res) => {
+                    if (res.ok) {
+                        res.json().then(
+                            (body) => {
+                                pendingUserdata[i] = body.user;
+                                if (i == pendingUserdata.length - 1) {
+                                    setCurrGredDetails({
+                                        ...currGredDetails,
+                                        pendingUserdata,
+                                    });
                                 }
-                            )
-                        }
+                            }
+                        )
                     }
-                )
-        }
+                }
+            )
+    }
     return <div>Loading...</div>;
 }

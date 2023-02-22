@@ -7,6 +7,6 @@ router.route("/")
     .post(usersController.createNewUser);
 
 router.route("/oneuser")
-    .get(verifyJWT, usersController.getUsername)
+    .get(verifyJWT, usersController.getOneUser)
 
 module.exports = router;

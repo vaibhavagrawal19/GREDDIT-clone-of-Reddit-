@@ -171,7 +171,7 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                             <ListItemText primary="Users" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
-                            navigate("/mygreds/joinReq");
+                            navigate("/mygreds/gred/joinReq");
                         }}>
                             <ListItemIcon>
                                 <AssignmentIndIcon />

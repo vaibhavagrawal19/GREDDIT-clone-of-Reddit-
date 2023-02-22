@@ -129,13 +129,13 @@ const deleteUser = asyncHandler(async (req, res) => {
     return res.status(204).json({ message: "User deleted successfully!" });
 });
 
-const getUsername = asyncHandler(async(req, res) => {
+const getOneUser = asyncHandler(async(req, res) => {
     const id = req.get("id");
     const user = await User.findById(id).lean().exec();
     if (!user) {
         return res.status(400);
     }
-    return res.status(200).json({ username: user.username });
+    return res.status(200).json({ user });
 });
 
 module.exports = {
@@ -143,5 +143,5 @@ module.exports = {
     createNewUser,
     updateUser,
     deleteUser,
-    getUsername,
+    getOneUser,
 };

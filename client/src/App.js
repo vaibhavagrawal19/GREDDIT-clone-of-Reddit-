@@ -20,7 +20,7 @@ function App() {
                 <Route path="/profile" element={<Dashboard userDetails={userDetails} setUserDetails={setUserDetails} />}></Route>
                 <Route path="/mygreds" element={<GredsPage userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
                 <Route path="/mygreds/gred" element={<SubGREDDIT currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
-                <Route path="/mygreds/joinReq" element={<Joining currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
+                <Route path="/mygreds/gred/joinReq" element={<Joining currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
                 <Route path="/allgreds" element={<AllGredsPage userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} />}></Route>
             </Routes>
         </BrowserRouter>

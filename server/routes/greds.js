@@ -16,6 +16,9 @@ router.route("/leave")
 
 router.route("/join")
     .get(gredsController.join);
+
+router.route("/joinreqaction")
+    .get(verifyJWT, gredsController.respond);
     
 router.route("/list")
     .post(verifyJWT, gredsController.list)
