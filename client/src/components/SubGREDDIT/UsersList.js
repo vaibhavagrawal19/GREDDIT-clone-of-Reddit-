@@ -19,7 +19,7 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ReportIcon from '@mui/icons-material/Report';
@@ -30,25 +30,6 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 
 const drawerWidth = 240;
-
-const posts = [
-    {
-        title: 'Featured post',
-        date: 'Nov 12',
-        description:
-            'This is a wider card with supporting text below as a natural lead-in to additional content.',
-        image: 'https://source.unsplash.com/random',
-        imageLabel: 'Image Text',
-    },
-    {
-        title: 'Post title',
-        date: 'Nov 11',
-        description:
-            'This is a wider card with supporting text below as a natural lead-in to additional content.',
-        image: 'https://source.unsplash.com/random',
-        imageLabel: 'Image Text',
-    },
-];
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
@@ -97,12 +78,13 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
 function Content({ currGredDetails, setCurrGredDetails }) {
-    const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
         setOpen(!open);
     };
     const [openForm, setOpenForm] = useState(false);
+
+    console.log(currGredDetails.pendingUserdata);
 
     return (
         <ThemeProvider theme={mdTheme}>
@@ -164,17 +146,13 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                     <List component="nav">
 
 
-                        <ListItemButton onClick={() => {
-                            navigate("/mygreds/gred/users");
-                        }}>
+                        <ListItemButton>
                             <ListItemIcon>
                                 <PeopleIcon />
                             </ListItemIcon>
                             <ListItemText primary="Users" />
                         </ListItemButton>
-                        <ListItemButton onClick={() => {
-                            navigate("/mygreds/gred/joinReq");
-                        }}>
+                        <ListItemButton>
                             <ListItemIcon>
                                 <AssignmentIndIcon />
                             </ListItemIcon>
@@ -215,43 +193,51 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                     }}
                 >
 
-                    {openForm ? <CreatePost currGredDetails={currGredDetails} setOpenForm={setOpenForm} setCurrGredDetails={setCurrGredDetails} /> :
+                    {
                         (<div>
                             <Toolbar />
                             <Toolbar />
-                            <Container>
-                                <center>
-                                    <Button variant="contained" onClick={() => {
-                                        setOpenForm(true);
-                                    }}>Post something!</Button>
-                                </center>
-                            </Container>
                             <Toolbar />
-                            <Container maxWidth="lg">
-                                <Grid container spacing={4}>
-                                    {currGredDetails.postDetails.map((post) => (
-                                        <Grid item xs={6} md={12}>
+                            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                                <Grid container spacing={3}>
+                                    {/* Chart */}
+                                    <Grid item xs={12} md={8} lg={12}>
+                                        <Paper
+                                            sx={{
+                                                p: 2,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                height: "auto",
+                                            }}
+                                        >
+                                            <h1>Users</h1>
+                                            {/* <Chart /> */}
+                                            <ul>
+                                                {currGredDetails.allowedUserData.map((user) => (
+                                                    <li>{user.username}</li>
+                                                ))}
+                                            </ul>
 
-                                            <Card sx={{ display: 'flex' }}>
-                                                <CardContent sx={{ flex: 1 }}>
-                                                    <Typography component="h2" variant="h5">
-                                                        {post.title}
-                                                    </Typography>
-                                                    <Typography variant="subtitle1" color="text.secondary">
-                                                        by {post.username}
-                                                    </Typography>
-                                                    <Toolbar />
-                                                    <Typography variant="subtitle1" paragraph>
-                                                        {post.desc}
-                                                    </Typography>
-                                                </CardContent>
-                                                <CardContent>
-                                                    <Button variant="contained" disabled={false}>FOLLOW</Button>
-                                                </CardContent>
-
-                                            </Card>
-                                        </Grid>
-                                    ))}
+                                        </Paper>
+                                    </Grid>
+                                    {/* Recent Deposits */}
+                                    <Grid item xs={12} md={4} lg={12}>
+                                        <Paper
+                                            sx={{
+                                                p: 2,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                height: "auto",
+                                            }}
+                                        >   
+                                            <h1>Blocked Users</h1>
+                                            <ul>
+                                                {currGredDetails.blockedUserData.map((user) => (
+                                                    <li>{user.username}</li>
+                                                ))}
+                                            </ul>
+                                        </Paper>
+                                    </Grid>
                                 </Grid>
                             </Container>
                         </div>)}
@@ -261,37 +247,92 @@ function Content({ currGredDetails, setCurrGredDetails }) {
     );
 }
 
-export default function SubGREDDIT({ currGredDetails, setCurrGredDetails }) {
+export default function UsersList({ currGredDetails, setCurrGredDetails }) {
+    console.log("me");
     if (!currGredDetails) {
         return <Navigate to="/" />;
     }
 
-    if (currGredDetails.postDetails) {
-        return <Content currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />;
+    if (currGredDetails.gred.allowedUsers.length === 0) {
+        setCurrGredDetails({
+            ...currGredDetails,
+            allowedUserData: true,
+        });
+    }
+    if (currGredDetails.gred.blockedUsers.length === 0) {
+        setCurrGredDetails({
+            ...currGredDetails,
+            blockedUserData: true,
+        });
     }
 
-    console.log(currGredDetails);
+    if (currGredDetails.allowedUserData && currGredDetails.blockedUserData) {
+        return <Content currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />
+    }
 
-    fetch("http://localhost:4000/greds/onegred", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "id": String(currGredDetails),
-            "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
-        },
-    })
-        .then(
-            (res) => {
-                if (res.ok) {
-                    res.json().then(
-                        (body) => {
-                            console.log(body);
-                            // the currGredDetails is now set to contain the entire information about the subgred, earlier it only had the subgred's id
-                            setCurrGredDetails(body);
+
+    if (!currGredDetails.allowedUserData) {
+        let allowedUserData = new Array(currGredDetails.gred.allowedUsers.length);
+        for (let i = 0; i < currGredDetails.gred.allowedUsers.length; i++) {
+            fetch("http://localhost:4000/users/oneuser", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                    "id": String(currGredDetails.gred.allowedUsers[i]),
+                },
+
+            })
+                .then(
+                    (res) => {
+                        if (res.ok) {
+                            res.json().then(
+                                (body) => {
+                                    allowedUserData[i] = body.user;
+                                    if (i == allowedUserData.length - 1) {
+                                        setCurrGredDetails({
+                                            ...currGredDetails,
+                                            allowedUserData,
+                                        });
+                                    }
+                                }
+                            )
                         }
-                    )
-                }
-            }
-        );
+                    }
+                )
+        }
+    }
+
+    if (!currGredDetails.blockedUserData) {
+        let blockedUserData = new Array(currGredDetails.gred.blockedUsers.length);
+        for (let i = 0; i < currGredDetails.gred.blockedUsers.length; i++) {
+            fetch("http://localhost:4000/users/oneuser", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                    "id": String(currGredDetails.gred.blockedUsers[i]),
+                },
+
+            })
+                .then(
+                    (res) => {
+                        if (res.ok) {
+                            res.json().then(
+                                (body) => {
+                                    blockedUserData[i] = body.user;
+                                    if (i == blockedUserData.length - 1) {
+                                        setCurrGredDetails({
+                                            ...currGredDetails,
+                                            blockedUserData,
+                                        });
+                                    }
+                                }
+                            )
+                        }
+                    }
+                )
+        }
+    }
     return <div>Loading...</div>;
 }

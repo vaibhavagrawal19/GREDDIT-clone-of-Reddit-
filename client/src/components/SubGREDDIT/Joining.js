@@ -19,7 +19,7 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { Navigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ReportIcon from '@mui/icons-material/Report';
@@ -78,6 +78,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
 function Content({ currGredDetails, setCurrGredDetails }) {
+    const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
         setOpen(!open);
@@ -219,7 +220,9 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                     <List component="nav">
 
 
-                        <ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/mygreds/gred/users");
+                        }}>
                             <ListItemIcon>
                                 <PeopleIcon />
                             </ListItemIcon>

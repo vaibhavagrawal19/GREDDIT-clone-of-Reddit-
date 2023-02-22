@@ -19,7 +19,7 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ReportIcon from '@mui/icons-material/Report';
@@ -30,25 +30,6 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 
 const drawerWidth = 240;
-
-const posts = [
-    {
-        title: 'Featured post',
-        date: 'Nov 12',
-        description:
-            'This is a wider card with supporting text below as a natural lead-in to additional content.',
-        image: 'https://source.unsplash.com/random',
-        imageLabel: 'Image Text',
-    },
-    {
-        title: 'Post title',
-        date: 'Nov 11',
-        description:
-            'This is a wider card with supporting text below as a natural lead-in to additional content.',
-        image: 'https://source.unsplash.com/random',
-        imageLabel: 'Image Text',
-    },
-];
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
@@ -103,6 +84,81 @@ function Content({ currGredDetails, setCurrGredDetails }) {
         setOpen(!open);
     };
     const [openForm, setOpenForm] = useState(false);
+
+
+    function accept(user) {
+        console.log(user);
+        fetch("http://localhost:4000/greds/joinreqaction", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                "id": String(currGredDetails.gred._id),
+                "username": String(user.username),
+                "action": "accept",
+            },
+        })
+            .then(
+                (res) => {
+                    let currGredDetails_ = { ...currGredDetails };
+                    console.log("here");
+                    if (res.ok) {
+                        for (let i = 0; i < currGredDetails_.pendingUserdata.length; i++) {
+                            if (currGredDetails_.pendingUserdata[i] === user.username) {
+                                currGredDetails_.pendingUserdata.splice(i, 1);
+                                break;
+                            }
+                        }
+
+                        for (let i = 0; i < currGredDetails_.gred.pendingUsers.length; i++) {
+                            if (currGredDetails_.gred.pendingUsers[i] === user._id) {
+                                currGredDetails_.gred.pendingUsers.splice(i, 1);
+                                break;
+                            }
+                        }
+                        setCurrGredDetails(currGredDetails_);
+                    }
+                }
+            );
+    }
+
+    function reject(user) {
+        console.log(user);
+        fetch("http://localhost:4000/greds/joinreqaction", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                "id": String(currGredDetails.gred._id),
+                "username": String(user.username),
+                "action": "reject",
+            },
+        })
+            .then(
+                (res) => {
+                    let currGredDetails_ = { ...currGredDetails };
+                    console.log("here");
+                    if (res.ok) {
+                        for (let i = 0; i < currGredDetails_.pendingUserdata.length; i++) {
+                            if (currGredDetails_.pendingUserdata[i] === user.username) {
+                                currGredDetails_.pendingUserdata.splice(i, 1);
+                                break;
+                            }
+                        }
+
+                        for (let i = 0; i < currGredDetails_.gred.pendingUsers.length; i++) {
+                            if (currGredDetails_.gred.pendingUsers[i] === user._id) {
+                                currGredDetails_.gred.pendingUsers.splice(i, 1);
+                                break;
+                            }
+                        }
+                        setCurrGredDetails(currGredDetails_);
+                    }
+                }
+            );
+    }
+
+    console.log(currGredDetails.pendingUserdata);
 
     return (
         <ThemeProvider theme={mdTheme}>
@@ -172,9 +228,7 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                             </ListItemIcon>
                             <ListItemText primary="Users" />
                         </ListItemButton>
-                        <ListItemButton onClick={() => {
-                            navigate("/mygreds/gred/joinReq");
-                        }}>
+                        <ListItemButton>
                             <ListItemIcon>
                                 <AssignmentIndIcon />
                             </ListItemIcon>
@@ -215,40 +269,25 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                     }}
                 >
 
-                    {openForm ? <CreatePost currGredDetails={currGredDetails} setOpenForm={setOpenForm} setCurrGredDetails={setCurrGredDetails} /> :
+                    {
                         (<div>
                             <Toolbar />
                             <Toolbar />
-                            <Container>
-                                <center>
-                                    <Button variant="contained" onClick={() => {
-                                        setOpenForm(true);
-                                    }}>Post something!</Button>
-                                </center>
-                            </Container>
                             <Toolbar />
                             <Container maxWidth="lg">
                                 <Grid container spacing={4}>
-                                    {currGredDetails.postDetails.map((post) => (
+                                    {currGredDetails.gred.pendingUsers.length > 0 && currGredDetails.pendingUserdata.map((user) => (
                                         <Grid item xs={6} md={12}>
-
                                             <Card sx={{ display: 'flex' }}>
                                                 <CardContent sx={{ flex: 1 }}>
                                                     <Typography component="h2" variant="h5">
-                                                        {post.title}
-                                                    </Typography>
-                                                    <Typography variant="subtitle1" color="text.secondary">
-                                                        by {post.username}
-                                                    </Typography>
-                                                    <Toolbar />
-                                                    <Typography variant="subtitle1" paragraph>
-                                                        {post.desc}
+                                                        {user.username}
                                                     </Typography>
                                                 </CardContent>
                                                 <CardContent>
-                                                    <Button variant="contained" disabled={false}>FOLLOW</Button>
+                                                    <Button onClick={() => { accept(user) }} variant="contained" style={{ backgroundColor: "green" }} disabled={false}>ACCEPT</Button>
+                                                    <Button onClick={() => { reject(user) }} variant="contained" style={{ backgroundColor: "red" }} disabled={false}>REJECT</Button>
                                                 </CardContent>
-
                                             </Card>
                                         </Grid>
                                     ))}
@@ -261,37 +300,43 @@ function Content({ currGredDetails, setCurrGredDetails }) {
     );
 }
 
-export default function SubGREDDIT({ currGredDetails, setCurrGredDetails }) {
+export default function Reported({ currGredDetails, setCurrGredDetails }) {
     if (!currGredDetails) {
         return <Navigate to="/" />;
     }
 
-    if (currGredDetails.postDetails) {
-        return <Content currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />;
+    if (currGredDetails.pendingUserdata || currGredDetails.gred.pendingUsers.length === 0) {
+        return <Content currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />
     }
 
-    console.log(currGredDetails);
+    let pendingUserdata = new Array(currGredDetails.gred.pendingUsers.length);
+    for (let i = 0; i < currGredDetails.gred.pendingUsers.length; i++) {
+        fetch("http://localhost:4000/users/oneuser", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                "id": String(currGredDetails.gred.pendingUsers[i]),
+            },
 
-    fetch("http://localhost:4000/greds/onegred", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "id": String(currGredDetails),
-            "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
-        },
-    })
-        .then(
-            (res) => {
-                if (res.ok) {
-                    res.json().then(
-                        (body) => {
-                            console.log(body);
-                            // the currGredDetails is now set to contain the entire information about the subgred, earlier it only had the subgred's id
-                            setCurrGredDetails(body);
-                        }
-                    )
+        })
+            .then(
+                (res) => {
+                    if (res.ok) {
+                        res.json().then(
+                            (body) => {
+                                pendingUserdata[i] = body.user;
+                                if (i == pendingUserdata.length - 1) {
+                                    setCurrGredDetails({
+                                        ...currGredDetails,
+                                        pendingUserdata,
+                                    });
+                                }
+                            }
+                        )
+                    }
                 }
-            }
-        );
+            )
+    }
     return <div>Loading...</div>;
 }
