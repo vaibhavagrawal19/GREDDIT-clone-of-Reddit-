@@ -89,7 +89,6 @@ function openPage(userDetails, gred, setCurrGredDetails, navigate, status) {
 }
 
 function Gred({ gred, userDetails, allGreds, setAllGreds, status, setCurrGredDetails }) {
-    console.log(setCurrGredDetails);
     const navigate = useNavigate();
     const [disable, setDisable] = useState(String(gred.user) === String(userDetails._id));
     return (

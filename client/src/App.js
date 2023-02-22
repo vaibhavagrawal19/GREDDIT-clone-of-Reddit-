@@ -25,7 +25,7 @@ function App() {
                 <Route path="/mygreds/gred/joinReq" element={<Joining currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
                 <Route path="/mygreds/gred/users" element={<UsersList currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
                 <Route path="/allgreds" element={<AllGredsPage userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
-                <Route path="/allgreds/gred" element={<SubGREDDIT currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} setUserDetails={setUserDetails} />}></Route>
+                <Route path="/allgreds/gred" element={<SubGREDDITPublic currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} setUserDetails={setUserDetails} />}></Route>
             </Routes>
         </BrowserRouter>
     );

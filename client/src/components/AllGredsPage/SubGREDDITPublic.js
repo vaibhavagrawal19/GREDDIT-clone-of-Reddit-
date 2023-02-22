@@ -29,6 +29,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
+import TextField from '@mui/material/TextField';
 
 const drawerWidth = 240;
 
@@ -95,6 +96,65 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 );
 
+function ReportForm({ post, setReports }) {
+    const [state, setState] = useState({
+        desc: "",
+    });
+    function handleChange(event) {
+        event.preventDefault();
+        setState({
+            ...state,
+            [event.target.name]: event.target.value,
+        });
+    }
+    function handleSubmit(post) {
+        fetch("http://localhost:4000/posts/report", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "post": String(post._id),
+            },
+            body: JSON.stringify({
+                desc: state.desc,
+            }),
+        })
+            .then(
+                (res) => {
+                    if (res.ok) {
+                        setReports("submitted");
+                    }
+                }
+            )
+    }
+    return (
+        <Box component="form" noValidate sx={{ mt: 1 }}>
+            <TextField
+                onChange={handleChange}
+                value={state.report}
+                margin="normal"
+                fullWidth
+                multiline
+                rows={5}
+                maxRows={5}
+                id="desc"
+                label="Report"
+                name="desc"
+                autoComplete="report"
+            />
+            <Button
+                onClick={() => { handleSubmit(post) }}
+                disabled={false}
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+            >
+                SUBMIT
+            </Button>
+        </Box>
+    );
+}
+
 const mdTheme = createTheme();
 
 function Content({ currGredDetails, setCurrGredDetails, setUserDetails }) {
@@ -104,6 +164,18 @@ function Content({ currGredDetails, setCurrGredDetails, setUserDetails }) {
         setOpen(!open);
     };
     const [openForm, setOpenForm] = useState(false);
+    let reportsArr = new Array(currGredDetails.gred.posts.length).fill(false);
+    const [reports, setReports] = useState(reportsArr);
+
+    function handleReport(setReports, reports, currGredDetails, post) {
+        let postIndex = currGredDetails.gred.posts.indexOf(String(post._id));
+        let newReportStatus = new Array(reports.length);
+        for (let i = 0; i < newReportStatus; i++) {
+            newReportStatus[i] = reports[i];
+        }
+        newReportStatus[postIndex] = !reports[postIndex];
+        setReports(newReportStatus);
+    }
 
     return (
         <ThemeProvider theme={mdTheme}>
@@ -245,8 +317,14 @@ function Content({ currGredDetails, setCurrGredDetails, setUserDetails }) {
                                                 </CardContent>
                                                 <CardContent>
                                                     <Button variant="contained" disabled={false}>FOLLOW</Button>
+                                                    <Button variant="contained" disabled={false} style={{ backgroundColor: "red" }} onClick={() => { handleReport(setReports, reports, currGredDetails, post) }}>REPORT</Button>
                                                 </CardContent>
-
+                                            </Card>
+                                            <Card>
+                                                <CardContent>
+                                                    {reports[currGredDetails.gred.posts.indexOf(post._id)] === true && <ReportForm post={post} />}
+                                                    {reports[currGredDetails.gred.posts.indexOf(post._id)] === "submitted" && <p style={{color: "red"}}>Report submitted successfully!</p>}
+                                                </CardContent>
                                             </Card>
                                         </Grid>
                                     ))}

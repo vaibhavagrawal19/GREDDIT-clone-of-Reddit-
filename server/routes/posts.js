@@ -6,6 +6,9 @@ const verifyJWT = require("../middleware/verifyJWT");
 router.route("/")
     // .get(postsController.getAllposts)
     .post(verifyJWT, postsController.createPost)
+
+router.route("/report")
+    .post(verifyJWT, postsController.reportPost);
     
 // router.route("/list")
     // .post(postsController.list)

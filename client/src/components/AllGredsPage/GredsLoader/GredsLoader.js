@@ -6,7 +6,6 @@ import Container from '@mui/material/Container';
 import { Button, Typography } from "@mui/material";
 
 export default function GredsLoader({ userDetails, allGreds, setAllGreds, setUserDetails, setCurrGredDetails }) {
-    console.log(setCurrGredDetails);
     return (
         <Box
             component="main"

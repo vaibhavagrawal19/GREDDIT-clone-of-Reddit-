@@ -34,7 +34,11 @@ const postSchema = new mongoose.Schema({
     reporter: {
         type: String,
         default: "None",
-    }
+    },
+    report: {
+        type: String,
+        default: "",
+    },
 })
 
 module.exports = mongoose.model("Post", postSchema);
