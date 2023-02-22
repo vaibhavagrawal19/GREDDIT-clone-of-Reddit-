@@ -7,6 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { Button } from "@mui/material";
 import { useState } from "react";
+import { useNavigate } from 'react-router';
 
 function handleLeave(gred, user, allGreds, setAllGreds, setDisable) {
     setDisable(true);
@@ -79,13 +80,23 @@ function handleJoin(gred, user, allGreds, setAllGreds, setDisable) {
 
 }
 
-function Gred({ gred, userDetails, allGreds, setAllGreds, status }) {
+function openPage(userDetails, gred, setCurrGredDetails, navigate, status) {
+    if (status === "joined") {
+        setCurrGredDetails(gred._id);
+        console.log(gred._id);
+        navigate("/allgreds/gred");
+    }
+}
+
+function Gred({ gred, userDetails, allGreds, setAllGreds, status, setCurrGredDetails }) {
+    console.log(setCurrGredDetails);
+    const navigate = useNavigate();
     const [disable, setDisable] = useState(String(gred.user) === String(userDetails._id));
     return (
         <Grid item xs={6} md={12}>
             <CardActionArea component="a">
                 <Card sx={{ display: 'flex' }}>
-                    <CardContent sx={{ flex: 1 }}>
+                    <CardContent sx={{ flex: 1 }} onClick={() => { openPage(userDetails, gred, setCurrGredDetails, navigate, status) }}>
                         <Typography component="h2" variant="h5">
                             {gred.title}
                         </Typography>
@@ -105,11 +116,11 @@ function Gred({ gred, userDetails, allGreds, setAllGreds, status }) {
                     <CardContent>
                         {status === "joined" && <Button variant="contained" style={{ backgroundColor: "red" }} disabled={disable} onClick={() => { handleLeave(gred, userDetails._id, allGreds, setAllGreds, setDisable) }}>LEAVE</Button>}
                         {status === "pending" && <Button variant="contained" style={{ backgroundColor: "green" }} disabled={false} > PENDING...</Button>}
-                    {status === "others" && <Button variant="contained" disabled={disable} onClick={() => { handleJoin(gred, userDetails._id, allGreds, setAllGreds, setDisable) }}>JOIN</Button>}
-                </CardContent>
+                        {status === "others" && <Button variant="contained" disabled={disable} onClick={() => { handleJoin(gred, userDetails._id, allGreds, setAllGreds, setDisable) }}>JOIN</Button>}
+                    </CardContent>
 
-            </Card>
-        </CardActionArea>
+                </Card>
+            </CardActionArea>
         </Grid >
     );
 }

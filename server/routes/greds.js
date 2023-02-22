@@ -24,4 +24,6 @@ router.route("/list")
     .post(verifyJWT, gredsController.list)
     .get(verifyJWT, gredsController.listAll);
 
+router.route("/reported")
+    .get(verifyJWT, gredsController.getReported);
 module.exports = router;

@@ -175,6 +175,10 @@ const getOneGred = asyncHandler(async (req, res) => {
     const id = req.get("id");
     const user = req.user;
     const gred = await Gred.findById(id).exec();
+
+    if (!gred.allowedUsers.includes(String(user))) {
+        return res.status(403).json({ message: "Forbidden!" });
+    }
     const postDetails = new Array();
     for (let i = 0; i < gred.posts.length; i++) {
         post = await Post.findById(gred.posts[i]);
@@ -182,6 +186,23 @@ const getOneGred = asyncHandler(async (req, res) => {
     }
     return res.status(200).json({ gred, postDetails });
 });
+
+const getReported = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const id = req.get("id");
+    
+    const gred = await Gred.findById(id).lean().exec();
+    if (String(gred.user) !== String(user)) {
+        return res.status(401).json({ message: "Unauthorized!" });
+    }
+
+    let postDetails = new Array();
+    for (let i = 0; i < gred.reports.length; i++) {
+        const post = await Post.findById(gred.reports[i]).lean().exec();
+        postDetails.push(post);
+    }
+    return res.status(200).json({ reports: postDetails });
+})
 
 module.exports = {
     getAllGreds,
@@ -193,4 +214,5 @@ module.exports = {
     join,
     getOneGred,
     respond,
+    getReported,
 };

@@ -228,7 +228,9 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                             </ListItemIcon>
                             <ListItemText primary="Users" />
                         </ListItemButton>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/mygreds/gred/joinReq");
+                        }}>
                             <ListItemIcon>
                                 <AssignmentIndIcon />
                             </ListItemIcon>
@@ -276,15 +278,24 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                             <Toolbar />
                             <Container maxWidth="lg">
                                 <Grid container spacing={4}>
-                                    {currGredDetails.gred.pendingUsers.length > 0 && currGredDetails.pendingUserdata.map((user) => (
+                                    {currGredDetails.gred.reports.length > 0 && currGredDetails.reportedList.map((post) => (
                                         <Grid item xs={6} md={12}>
                                             <Card sx={{ display: 'flex' }}>
                                                 <CardContent sx={{ flex: 1 }}>
                                                     <Typography component="h2" variant="h5">
-                                                        {user.username}
+                                                        {post.title}
+                                                    </Typography>
+                                                    <Typography component="h2" variant="subtitle1">
+                                                        {post.desc}
                                                     </Typography>
                                                 </CardContent>
                                                 <CardContent>
+                                                    <Typography component="h2" variant="h5">
+                                                        Reported by: {post.reporter}
+                                                    </Typography>
+                                                    <Typography component="h2" variant="h5">
+                                                        Posted by: {post.username}
+                                                    </Typography>
                                                     <Button onClick={() => { accept(user) }} variant="contained" style={{ backgroundColor: "green" }} disabled={false}>ACCEPT</Button>
                                                     <Button onClick={() => { reject(user) }} variant="contained" style={{ backgroundColor: "red" }} disabled={false}>REJECT</Button>
                                                 </CardContent>
@@ -305,38 +316,35 @@ export default function Reported({ currGredDetails, setCurrGredDetails }) {
         return <Navigate to="/" />;
     }
 
-    if (currGredDetails.pendingUserdata || currGredDetails.gred.pendingUsers.length === 0) {
+    if (currGredDetails.reportedList) {
         return <Content currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />
     }
 
-    let pendingUserdata = new Array(currGredDetails.gred.pendingUsers.length);
-    for (let i = 0; i < currGredDetails.gred.pendingUsers.length; i++) {
-        fetch("http://localhost:4000/users/oneuser", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
-                "id": String(currGredDetails.gred.pendingUsers[i]),
-            },
+    let reportedList = new Array(currGredDetails.gred.reports.length);
+    fetch("http://localhost:4000/greds/reported", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+            "id": String(currGredDetails.gred._id),
+        },
 
-        })
-            .then(
-                (res) => {
-                    if (res.ok) {
-                        res.json().then(
-                            (body) => {
-                                pendingUserdata[i] = body.user;
-                                if (i == pendingUserdata.length - 1) {
-                                    setCurrGredDetails({
-                                        ...currGredDetails,
-                                        pendingUserdata,
-                                    });
-                                }
-                            }
-                        )
-                    }
+    })
+        .then(
+            (res) => {
+                if (res.ok) {
+                    res.json().then(
+                        (body) => {
+                            reportedList = body.reports;
+                            setCurrGredDetails({
+                                ...currGredDetails,
+                                reportedList,
+                            })
+                        }
+                    )
                 }
-            )
-    }
+            }
+        )
+
     return <div>Loading...</div>;
 }

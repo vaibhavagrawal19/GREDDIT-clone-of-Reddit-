@@ -50,7 +50,7 @@ const gredSchema = new mongoose.Schema(
         reports: {
             type: Array,
             default: [],
-        }
+        },
     },
     {
         timestamps: true,

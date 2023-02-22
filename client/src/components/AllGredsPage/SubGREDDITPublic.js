@@ -12,32 +12,44 @@ import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import Container from '@mui/material/Container';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import PeopleIcon from '@mui/icons-material/People';
 import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import { Navigate, useNavigate } from "react-router-dom";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import ReportIcon from '@mui/icons-material/Report';
 import { useState } from "react";
-import { useNavigate, Navigate } from 'react-router';
-import LogoutIcon from '@mui/icons-material/Logout';
+import { Button } from "@mui/material";
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import GredsLoader from './GredsLoader/GredsLoader';
-
-
-function Copyright(props) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit">
-                GREDDIIT
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const drawerWidth = 240;
+
+const posts = [
+    {
+        title: 'Featured post',
+        date: 'Nov 12',
+        description:
+            'This is a wider card with supporting text below as a natural lead-in to additional content.',
+        image: 'https://source.unsplash.com/random',
+        imageLabel: 'Image Text',
+    },
+    {
+        title: 'Post title',
+        date: 'Nov 11',
+        description:
+            'This is a wider card with supporting text below as a natural lead-in to additional content.',
+        image: 'https://source.unsplash.com/random',
+        imageLabel: 'Image Text',
+    },
+];
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
@@ -85,13 +97,13 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
-function Content({ userDetails, setUserDetails, allGreds, setAllGreds, setCurrGredDetails }) {
+function Content({ currGredDetails, setCurrGredDetails, setUserDetails }) {
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
-    const [openForm, setOpenForm] = React.useState(false);
     const toggleDrawer = () => {
         setOpen(!open);
     };
+    const [openForm, setOpenForm] = useState(false);
 
     return (
         <ThemeProvider theme={mdTheme}>
@@ -122,7 +134,7 @@ function Content({ userDetails, setUserDetails, allGreds, setAllGreds, setCurrGr
                             noWrap
                             sx={{ flexGrow: 1 }}
                         >
-                            All Sub-GREDDIITS
+                            {currGredDetails.gred.title}
                         </Typography>
                         {/* <IconButton color="inherit">
                             <Badge badgeContent={4} color="secondary">
@@ -178,7 +190,6 @@ function Content({ userDetails, setUserDetails, allGreds, setAllGreds, setCurrGr
                         <ListItemButton onClick={() => {
                             localStorage.removeItem("refreshToken");
                             setUserDetails(false);
-                            setUserDetails(false);
                             navigate("/");
                         }
                         }>
@@ -189,85 +200,96 @@ function Content({ userDetails, setUserDetails, allGreds, setAllGreds, setCurrGr
                         </ListItemButton>
                     </List>
                 </Drawer>
+                <Box
+                    component="main"
+                    sx={{
+                        backgroundColor: (theme) =>
+                            theme.palette.mode === 'light'
+                                ? theme.palette.grey[100]
+                                : theme.palette.grey[900],
+                        flexGrow: 1,
+                        height: '100vh',
+                        overflow: 'auto',
+                    }}
+                >
 
+                    {
+                        (<div>
+                            <Toolbar />
+                            <Toolbar />
+                            <Container>
+                                <center>
+                                    <Button variant="contained" onClick={() => {
+                                        setOpenForm(true);
+                                    }}>Post something!</Button>
+                                </center>
+                            </Container>
+                            <Toolbar />
+                            <Container maxWidth="lg">
+                                <Grid container spacing={4}>
+                                    {currGredDetails.postDetails.map((post) => (
+                                        <Grid item xs={6} md={12}>
 
-                <GredsLoader userDetails={userDetails} allGreds={allGreds} setAllGreds={setAllGreds} setUserDetails={setUserDetails} setCurrGredDetails={setCurrGredDetails} />
+                                            <Card sx={{ display: 'flex' }}>
+                                                <CardContent sx={{ flex: 1 }}>
+                                                    <Typography component="h2" variant="h5">
+                                                        {post.title}
+                                                    </Typography>
+                                                    <Typography variant="subtitle1" color="text.secondary">
+                                                        by {post.username}
+                                                    </Typography>
+                                                    <Toolbar />
+                                                    <Typography variant="subtitle1" paragraph>
+                                                        {post.desc}
+                                                    </Typography>
+                                                </CardContent>
+                                                <CardContent>
+                                                    <Button variant="contained" disabled={false}>FOLLOW</Button>
+                                                </CardContent>
+
+                                            </Card>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </Container>
+                        </div>)}
+                </Box>
             </Box>
         </ThemeProvider>
     );
 }
 
-export default function AllGredsPage({ userDetails, setUserDetails, myGredDetails, setMyGredDetails, setCurrGredDetails }) {
-    const [allGreds, setAllGreds] = useState(false);
-    const navigate = useNavigate();
-    if (!localStorage.getItem("refreshToken")) {
+export default function SubGREDDITPublic({ currGredDetails, setCurrGredDetails, setUserDetails }) {
+    if (!currGredDetails) {
         return <Navigate to="/" />;
     }
-    if (userDetails && allGreds) {
-        return <Content userDetails={userDetails} setUserDetails={setUserDetails} allGreds={allGreds} setAllGreds={setAllGreds} setCurrGredDetails={setCurrGredDetails} />;
-    }
-    else if (userDetails) {
-        fetch("http://localhost:4000/greds/list", {
-            method: "GET",
-            headers: {
-                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
-                "Content-Type": "application/json",
-            },
-        })
-            .then(
-                (res) => {
-                    if (res.ok) {
-                        res.json()
-                            .then((body) => {
-                                setAllGreds(body);
-                                console.log(body);
-                                return (
-                                    <div>
-                                        Loading...
-                                    </div>
-                                )
-                            });
-                    }
-                    else {
-                        res.json()
-                            .then((body) => {
-                                let errMsg = body.message;
-                                console.log(errMsg);
-                            });
-                    }
-                }
-            )
 
+    if (currGredDetails.postDetails) {
+        return <Content currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} setUserDetails={setUserDetails} />;
     }
-    else {
-        fetch("http://localhost:4000/auth/refresh", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "refreshToken": localStorage.getItem("refreshToken"),
-            },
-        })
-            .then(
-                (res) => {
-                    if (res.ok) {
-                        let body = res.json();
-                        body.then((body) => {
-                            setUserDetails(body);
-                        });
-                    }
-                    else {
-                        return navigate("/");
-                    }
-                }
-            )
-            .catch((err) => {
-                console.log(err);
-            });
 
-        return (
-            <div>
-                Loading...
-            </div>
-        )
-    }
+    console.log(currGredDetails);
+
+    fetch("http://localhost:4000/greds/onegred", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "id": String(currGredDetails),
+            "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+        },
+    })
+        .then(
+            (res) => {
+                if (res.ok) {
+                    res.json().then(
+                        (body) => {
+                            console.log(body);
+                            // the currGredDetails is now set to contain the entire information about the subgred, earlier it only had the subgred's id
+                            setCurrGredDetails(body);
+                        }
+                    )
+                }
+            }
+        );
+    return <div>Loading...</div>;
 }
