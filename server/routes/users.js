@@ -9,4 +9,10 @@ router.route("/")
 router.route("/oneuser")
     .get(verifyJWT, usersController.getOneUser)
 
+router.route("/follow")
+    .get(verifyJWT, usersController.follow);
+
+router.route("/saved")
+    .get(verifyJWT, usersController.getSaved);
+    
 module.exports = router;

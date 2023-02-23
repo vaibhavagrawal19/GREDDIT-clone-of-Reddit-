@@ -27,6 +27,8 @@ import ProfileDetails from './ProfileDetails';
 import SocialConnect from './SocialConnect';
 import Orders from './Orders';
 import { Navigate, useNavigate } from "react-router-dom";
+import SaveIcon from '@mui/icons-material/Save';
+
 
 import { useState } from "react";
 
@@ -143,8 +145,6 @@ function DashboardContent({ userDetails, setUserDetails }) {
                     {/* these are the items displayed on the toolbar */}
                     <Divider />
                     <List component="nav">
-
-
                         <ListItemButton>
                             <ListItemIcon>
                                 <DashboardIcon />
@@ -166,6 +166,14 @@ function DashboardContent({ userDetails, setUserDetails }) {
                                 <PeopleIcon />
                             </ListItemIcon>
                             <ListItemText primary="All Sub-GREDDITS" />
+                        </ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/saved");
+                        }}>
+                            <ListItemIcon>
+                                <SaveIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Saved Posts" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
                             localStorage.removeItem("refreshToken");
@@ -246,6 +254,7 @@ export default function Dashboard({ userDetails, setUserDetails }) {
         return <DashboardContent userDetails={userDetails} setUserDetails={setUserDetails} />
     }
 
+    console.log("about to fetch");
     fetch("http://localhost:4000/auth/refresh", {
         method: "GET",
         headers: {
@@ -256,7 +265,7 @@ export default function Dashboard({ userDetails, setUserDetails }) {
         .then(
             (res) => {
                 if (res.ok) {
-                    console.log(res)
+                    console.log(res);
                     let body = res.json();
                     body.then((body) => {
                         setUserDetails(body);

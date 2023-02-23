@@ -248,7 +248,6 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                                                 <CardContent>
                                                     <Button variant="contained" disabled={false}>FOLLOW</Button>
                                                 </CardContent>
-
                                             </Card>
                                         </Grid>
                                     ))}

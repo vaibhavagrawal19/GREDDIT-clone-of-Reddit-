@@ -10,6 +10,7 @@ import Joining from "./components/SubGREDDIT/Joining";
 import UsersList from "./components/SubGREDDIT/UsersList";
 import SubGREDDITPublic from "./components/AllGredsPage/SubGREDDITPublic";
 import Reported from "./components/SubGREDDIT/Reported";
+import SavedPosts from "./components/SavedPosts/SavedPosts";
 
 import { useState } from "react";
 function App() {
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/mygreds/gred/users" element={<UsersList currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
                 <Route path="/allgreds" element={<AllGredsPage userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} />}></Route>
                 <Route path="/allgreds/gred" element={<SubGREDDITPublic currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} setUserDetails={setUserDetails} />}></Route>
+                <Route path="/saved" element={<SavedPosts userDetails={userDetails} setUserDetails={setUserDetails} />}></Route>
             </Routes>
         </BrowserRouter>
     );

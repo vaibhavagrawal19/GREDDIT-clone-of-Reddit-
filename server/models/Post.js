@@ -20,12 +20,12 @@ const postSchema = new mongoose.Schema({
         ref: "Gred",
     },
     upvotes: {
-        type: Number,
-        default: 1,
+        type: Array,
+        default: [],
     },
     downvotes: {
-        type: Number,
-        default: 0,
+        type: Array,
+        default: [],
     },
     desc: {
         type: String,

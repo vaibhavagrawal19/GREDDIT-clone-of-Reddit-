@@ -171,17 +171,50 @@ const respond = asyncHandler(async (req, res) => {
     return res.status(200).json({ user: String(userID) });
 });
 
+const block = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const id = req.get("id");
+    const toBlock = req.get("toBlock");
+
+    let gredObj = await Gred.findById(String(id)).exec();
+    if (String(gredObj.user) !== String(user)) {
+        return res.status(401).json({ id });
+    }
+
+    if (!gredObj.allowedUsers.includes(String(toBlock))) {
+        return res.status(403).json({ id });
+    }
+
+    if (gredObj.blockedUsers.includes(String(toBlock))) {
+        return res.status(200).json({ id });
+    }
+
+    console.log("about to block");
+    gredObj.blockedUsers.push(String(toBlock));
+    for (let i = 0; i < gredObj.allowedUsers.length; i++) {
+        if (String(gredObj.allowedUsers[i]) === String(toBlock)) {
+            console.log("about to unallow");
+            gredObj.allowedUsers.splice(i, 1);
+        }
+    }
+
+    console.log("about to save");
+    await gredObj.save();
+    
+    return res.status(200).json({ gred: gredObj });
+})
+
 const getOneGred = asyncHandler(async (req, res) => {
     const id = req.get("id");
     const user = req.user;
     const gred = await Gred.findById(id).exec();
 
-    if (!gred.allowedUsers.includes(String(user))) {
-        return res.status(403).json({ message: "Forbidden!" });
-    }
     const postDetails = new Array();
     for (let i = 0; i < gred.posts.length; i++) {
-        post = await Post.findById(gred.posts[i]);
+        let post = await Post.findById(gred.posts[i]).lean().exec();
+        if (String(user) !== String(gred.user) && gred.blockedUsers.includes(String(post.user))) {
+            post.username = "Blocked User";
+        }
         postDetails.push(post);
     }
     return res.status(200).json({ gred, postDetails });
@@ -216,4 +249,5 @@ module.exports = {
     getOneGred,
     respond,
     getReported,
+    block,
 };

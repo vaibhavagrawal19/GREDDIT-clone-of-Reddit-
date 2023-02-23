@@ -12,5 +12,15 @@ router.route("/report")
 
 router.route("/ignore")
     .get(verifyJWT, postsController.ignorePost);
+
+router.route("/upvote")
+    .get(verifyJWT, postsController.upvote);
+
+router.route("/downvote")
+    .get(verifyJWT, postsController.downvote);
+
+router.route("/save")
+    .get(verifyJWT, postsController.savePost)
+    .delete(verifyJWT, postsController.unsavePost);
     
 module.exports = router;

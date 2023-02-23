@@ -78,12 +78,53 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
 function Content({ currGredDetails, setCurrGredDetails }) {
+    const deleteBtnsFalse = new Array(currGredDetails.reportedList.length).fill(false);
+    const blockBtnsFalse = new Array(currGredDetails.reportedList.length).fill(false);
+    const ignoreBtnsFalse = new Array(currGredDetails.reportedList.length).fill(false);
+
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
         setOpen(!open);
     };
     const [openForm, setOpenForm] = useState(false);
+
+    const [ignoreBtns, setIgnoreBtns] = useState(ignoreBtnsFalse);
+    const [blockBtns, setBlockBtns] = useState(blockBtnsFalse);
+    const [deleteBtns, setDeleteBtns] = useState(deleteBtnsFalse);
+
+    function handleBlock(report) {
+        fetch("http://localhost:4000/greds/block", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                "id": String(report.post.gred),
+                "toBlock": String(report.post.user),
+            },
+        })
+            .then(
+                (res) => {
+                    let currGredDetails_ = { ...currGredDetails };
+                    if (res.ok) {
+                        console.log("here");
+                        for (let i = 0; i < currGredDetails_.reportedList.length; i++) {
+                            if (currGredDetails_.reportedList[i] === report) {
+                                console.log("about to remove from frontend!");
+                                currGredDetails_.reportedList.splice(i, 1);
+                                break;
+                            }
+                        }
+                        res.json().then(
+                            (body) => {
+                                currGredDetails_.gred = body.gredObj;
+                                setCurrGredDetails(currGredDetails_);
+                            }
+                        )
+                    }
+                }
+            )
+    }
 
     function handleIgnore(report, currGredDetails) {
         console.log("came here!");
@@ -101,9 +142,6 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                     if (res.ok) {
                         console.log("here");
                         for (let i = 0; i < currGredDetails_.reportedList.length; i++) {
-                            console.log(currGredDetails_.reportedList[i].report === report);
-                            console.log(i);
-
                             if (currGredDetails_.reportedList[i] === report) {
                                 console.log("about to remove from frontend!");
                                 currGredDetails_.reportedList.splice(i, 1);
@@ -142,18 +180,10 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                                 break;
                             }
                         }
-
-                        // for (let i = 0; i < currGredDetails_.gred.pendingUsers.length; i++) {
-                        //     if (currGredDetails_.gred.pendingUsers[i] === user._id) {
-                        //         currGredDetails_.gred.pendingUsers.splice(i, 1);
-                        //         break;
-                        //     }
-                        // }
                         res.json().then(
                             (body) => {
                                 currGredDetails_.gred = body.gredObj;
                                 setCurrGredDetails(currGredDetails_);
-
                             }
                         )
                     }
@@ -162,6 +192,7 @@ function Content({ currGredDetails, setCurrGredDetails }) {
     }
 
     console.log(currGredDetails.reportedList);
+
     return (
         <ThemeProvider theme={mdTheme}>
             <Box sx={{ display: 'flex' }}>
@@ -313,20 +344,22 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                                                     handleDelete(report, currGredDetails);
                                                     event.target.disabled = false;
                                                 }
-                                            } style={{ backgroundColor: "red" }} variant="contained" disabled={false}>DELETE POST</Button>
+                                            } style={{ backgroundColor: "red" }} variant="contained" disabled={deleteBtns[currGredDetails.reportedList.indexOf(report)]}>DELETE POST</Button>
                                             <Button onClick={
                                                 (event) => {
-                                                    event.target.disabled = true;
                                                     event.preventDefault();
                                                     console.log("here");
                                                     handleIgnore(report, currGredDetails);
-                                                    event.target.disabled = false;
                                                 }} variant="contained" disabled={false}>IGNORE</Button>
                                             <Button onClick={
                                                 (event) => {
-
+                                                    let newBlockBtns = blockBtns;
+                                                    newBlockBtns[currGredDetails.reportedList.indexOf(report)] = true;
+                                                    setBlockBtns(newBlockBtns);
+                                                    event.preventDefault();
+                                                    handleBlock(report);
                                                 }
-                                            } style={{ backgroundColor: "red" }} variant="contained" disabled={false}>BLOCK USER</Button>
+                                            } style={{ backgroundColor: "red" }} variant="contained" disabled={blockBtns[currGredDetails.reportedList.indexOf(report)]}>BLOCK USER</Button>
 
                                         </CardContent>
                                     </Card>

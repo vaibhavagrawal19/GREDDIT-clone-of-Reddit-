@@ -1,6 +1,8 @@
 const User = require("../models/User");
+const Post = require("../models/Post");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
+const Gred = require("../models/Gred");
 
 const getAllUsers = asyncHandler(async (req, res) => {
     const usersList = await User.find().select("-password").lean();
@@ -11,6 +13,49 @@ const getAllUsers = asyncHandler(async (req, res) => {
     }
 
     res.json(usersList);
+});
+
+const follow = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const id = req.get("id");
+
+    if (String(user) === String(id)) {
+        return res.status(200).json({ id });
+    }
+
+    const userObj = await User.findById(String(id)).exec();
+    if (userObj.followers.includes(String(user))) {
+        return res.status(200).json({ id });
+    }
+
+    userObj.followers.push(String(user));
+
+    const followerObj = await User.findById(String(user)).exec();
+    followerObj.following.push(String(id));
+
+    await followerObj.save();
+    await userObj.save();
+
+    return res.status(200).json({ userDetails: followerObj });
+})
+
+
+const getSaved = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const userObj = await User.findById(String(user));
+    let postIDs = new Array(userObj.savedPosts.length);
+    for (let i = 0; i < userObj.savedPosts.length; i++) {
+        postIDs[i] = userObj.savedPosts[i];
+    }
+    const postDetails = new Array(userObj.savedPosts.length);
+    for (let i = 0; i < userObj.savedPosts.length; i++) {
+        let postObj = await Post.findById(String(userObj.savedPosts[i])).lean().exec();
+        postDetails[i] = postObj;
+
+        const gredObj = await Gred.findById(String(postObj.gred)).lean().exec();
+        postDetails[i].gredName = gredObj.title;
+    }
+    return res.status(200).json({ postDetails });
 });
 
 const createNewUser = asyncHandler(async (req, res) => {
@@ -144,4 +189,6 @@ module.exports = {
     updateUser,
     deleteUser,
     getOneUser,
+    follow,
+    getSaved,
 };

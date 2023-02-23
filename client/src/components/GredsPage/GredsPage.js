@@ -23,6 +23,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GredsLoader from './GredsLoader/GredsLoader';
 import CreateGred from './CreateGred';
+import SaveIcon from '@mui/icons-material/Save';
 
 const drawerWidth = 240;
 
@@ -138,8 +139,6 @@ function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails,
                     {/* these are the items displayed on the toolbar */}
                     <Divider />
                     <List component="nav">
-
-
                         <ListItemButton onClick={() => {
                             navigate("/profile");
                         }}>
@@ -149,7 +148,7 @@ function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails,
                             <ListItemText primary="Profile" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
-                            setOpenForm(false);
+                            navigate("/mygreds");
                         }}>
                             <ListItemIcon>
                                 <AssignmentIndIcon />
@@ -165,18 +164,29 @@ function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails,
                             <ListItemText primary="All Sub-GREDDITS" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
+                            navigate("/saved");
+                        }}>
+                            <ListItemIcon>
+                                <SaveIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Saved Posts" />
+                        </ListItemButton>
+                        <ListItemButton onClick={() => {
                             localStorage.removeItem("refreshToken");
                             setUserDetails(false);
-                            setMyGredDetails(false);
-                            setCurrGredDetails(false);
+                            console.log("here");
                             navigate("/");
-                        }
-                        }>
+                        }}>
                             <ListItemIcon>
                                 <LogoutIcon />
                             </ListItemIcon>
                             <ListItemText primary="LOGOUT" />
                         </ListItemButton>
+
+
+
+                        {/* <Divider sx={{ my: 1 }} />
+                        {secondaryListItems} */}
                     </List>
                 </Drawer>
 
