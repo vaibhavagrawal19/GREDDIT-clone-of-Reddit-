@@ -37,7 +37,7 @@ const follow = asyncHandler(async (req, res) => {
     await userObj.save();
 
     return res.status(200).json({ userDetails: followerObj });
-})
+});
 
 
 const getSaved = asyncHandler(async (req, res) => {
@@ -96,65 +96,47 @@ const createNewUser = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-    const { oldusername, username, password, subGreds, savedPosts, firstname, lastname, age } = req.body;
+    const { username, firstname, lastname, age } = req.body;
+    console.log(req.body);
 
-    if (!oldusername) {
-        return res.status(400).json({ message: "NoOldUsername" });
-    }
     // obtain the user object with the given id, along with the edit routines (hence not using lean)
-    const user = await User.find({ username: oldusername }).exec();
+    const user = await User.findById(String(req.user)).exec();
+    console.log(user.username);
     if (!user) {
-        return res.status(400).json({ message: "NoUser" });
+        return res.status(404).json({ message: "NoUser" });
     }
 
-    if (username && user.username != username) { // the username is being changed
+    if (username && user.username !== username) { // the username is being changed
         // check if the requested username is already taken
         const duplicate = await User.findOne({ username }).lean().exec();
 
         if (duplicate) {
-            return res.status(400).json({ message: "The requested username has already been taken!" });
+            return res.status(403).json({ message: "Username_Duplicate" });
         }
 
         user.username = username;
     }
 
-    if (password) {
-        const newHashedPwd = await bcrypt.hash(password, 10); // salt rounds
-        user.password = newHashedPwd;
-    }
-
-    if (subGreds) {
-        if (subGreds != user.subGreds) {
-            user.subGreds = subGreds;
-        }
-    }
-
     if (firstname) {
-        if (firstname != user.firstname) {
+        if (firstname !== user.firstname) {
             user.firstname = firstname;
         }
     }
 
     if (lastname) {
-        if (lastname != user.lastname) {
+        if (lastname !== user.lastname) {
             user.lastname = lastname;
         }
     }
 
     if (age) {
-        if (age != user.age) {
+        if (age !== user.age) {
             user.age = age;
         }
     }
 
-    if (savedPosts) {
-        if (savedPosts != user.savedPosts) {
-            user.savedPosts = savedPosts;
-        }
-    }
-
     const updatedUser = await user.save();
-    return res.status(200).json({ message: "Updated successfully!" });
+    return res.status(200).json({ updatedUser });
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
@@ -186,6 +168,7 @@ const getOneUser = asyncHandler(async(req, res) => {
 module.exports = {
     getAllUsers,
     createNewUser,
+    updateUser,
     updateUser,
     deleteUser,
     getOneUser,

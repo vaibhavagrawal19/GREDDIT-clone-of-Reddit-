@@ -324,7 +324,6 @@ function AllPosts({ setOpenForm, currGredDetails, setUserDetails, setCurrGredDet
                     res.json().then(
                         (body) => {
                             setUserDetails(body.userDetails);
-
                         }
                     )
                 }

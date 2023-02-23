@@ -14,7 +14,6 @@ export default function ProfileDetails({ userDetails }) {
     }
     return (
         <div>
-            <Title><CreateIcon onClick={editProfile} style={{ cursor: "pointer" }}></CreateIcon>{' '}Profile Details</Title>
             <Typography color="text.secondary" sx={{ flex: 1 }}>
                 Firstname: 
             </Typography>

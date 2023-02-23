@@ -4,7 +4,8 @@ const usersController = require("../controllers/users");
 const verifyJWT = require("../middleware/verifyJWT");
 
 router.route("/")
-    .post(usersController.createNewUser);
+    .post(usersController.createNewUser)
+    .patch(verifyJWT, usersController.updateUser);
 
 router.route("/oneuser")
     .get(verifyJWT, usersController.getOneUser)

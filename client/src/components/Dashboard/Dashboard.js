@@ -25,10 +25,14 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import Chart from './Chart';
 import ProfileDetails from './ProfileDetails';
 import SocialConnect from './SocialConnect';
-import Orders from './Orders';
+import TextField from '@mui/material/TextField';
 import { Navigate, useNavigate } from "react-router-dom";
 import SaveIcon from '@mui/icons-material/Save';
-
+import Title from './Title';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Button from '@mui/material/Button';
+import CreateIcon from '@mui/icons-material/Create';
 
 import { useState } from "react";
 
@@ -78,9 +82,180 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 );
 
+function EditDetails({ setEdit, setUserDetails }) {
+    const [state, setState] = useState({
+        firstname: "",
+        lastname: "",
+        username: "",
+        age: "",
+        errorText: "",
+    });
+
+    function handleSubmit() {
+        const send = new Object();
+        if (state.firstname !== "") {
+            send.firstname = state.firstname;
+        }
+        if (state.lastname !== "") {
+            send.lastname = state.lastname;
+        }
+        if (String(state.age) !== "") {
+            send.age = state.age;
+        }
+        if (state.username !== "") {
+            send.username = state.username;
+        }
+
+        console.log("about to patch");
+        fetch("http://localhost:4000/users/", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+            },
+            body: JSON.stringify({
+                username: send.username,
+                lastname: send.lastname,
+                age: send.age,
+                username: send.username,
+            }),
+        })
+            .then(
+                (res) => {
+                    if (res.ok) {
+                        res.json().then(
+                            (body) => {
+                                setEdit(false); 
+                                setUserDetails(body.updatedUser);
+                            }
+                        )
+                    }
+                    else {
+                        res.json().then(
+                            (body) => {
+                                if (String(body.message) === "Username_Duplicate") {
+                                    setState({
+                                        errorText: "Username not available!",
+                                    });
+                                }
+                            }
+                        )
+                    }
+                }
+            )
+    }
+
+    function handleChange(event) {
+        event.preventDefault();
+        setState({
+            ...state,
+            [event.target.name]: event.target.value,
+        });
+    }
+    return (
+        <Box
+            component="main"
+            sx={{
+                backgroundColor: (theme) =>
+                    theme.palette.mode === 'light'
+                        ? theme.palette.grey[100]
+                        : theme.palette.grey[900],
+                flexGrow: 1,
+                height: '100vh',
+                overflow: 'auto',
+            }}
+        >
+            <Toolbar />
+            <Toolbar />
+            <Container maxWidth="lg">
+                <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+                    <Box
+                        sx={{
+                            my: 8,
+                            mx: 4,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Toolbar />
+                        <Typography component="h1" variant="h5">
+                            Edit Details
+                        </Typography>
+                        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                            <TextField
+                                onChange={handleChange}
+                                value={state.firstname}
+                                margin="normal"
+                                fullWidth
+                                id="firstname"
+                                label="Firstname"
+                                name="firstname"
+                                autoComplete="lastname"
+                                autoFocus
+                            />
+                            <TextField
+                                onChange={handleChange}
+                                value={state.lastname}
+                                margin="normal"
+                                fullWidth
+                                id="lastname"
+                                label="Lastname"
+                                name="lastname"
+                                autoComplete="lastname"
+                            />
+                            <TextField
+                                onChange={handleChange}
+                                value={state.age}
+                                margin="normal"
+                                type="number"
+                                fullWidth
+                                id="age"
+                                label="Age"
+                                name="age"
+                                autoComplete="age"
+                            />
+                            <TextField
+                                onChange={handleChange}
+                                value={state.username}
+                                margin="normal"
+                                fullWidth
+                                id="username"
+                                label="Username"
+                                name="username"
+                                autoComplete="username"
+                            />
+                            <Button
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    handleSubmit();
+                                }}
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                sx={{ mt: 3, mb: 2 }}
+                            >
+                                Confirm
+                            </Button>
+                            <Grid container>
+                                <Grid item xs>
+                                    <p style={{ color: "red" }}>
+                                        {state.errorText}
+                                    </p>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </Box>
+                </Grid>
+            </Container>
+        </Box>
+    );
+}
+
 const mdTheme = createTheme();
 
 function DashboardContent({ userDetails, setUserDetails }) {
+    const [edit, setEdit] = useState(false);
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
@@ -193,52 +368,58 @@ function DashboardContent({ userDetails, setUserDetails }) {
                         {secondaryListItems} */}
                     </List>
                 </Drawer>
-                <Box
-                    component="main"
-                    sx={{
-                        backgroundColor: (theme) =>
-                            theme.palette.mode === 'light'
-                                ? theme.palette.grey[100]
-                                : theme.palette.grey[900],
-                        flexGrow: 1,
-                        height: '100vh',
-                        overflow: 'auto',
-                    }}
-                >
-                    <Toolbar />
-                    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                        <Grid container spacing={3}>
-                            {/* Chart */}
-                            <Grid item xs={12} md={8} lg={6}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 500,
-                                    }}
-                                >
-                                    {/* <Chart /> */}
-                                    <ProfileDetails userDetails={userDetails} />
+                {edit === true ? <EditDetails setEdit={setEdit} setUserDetails={setUserDetails} /> :
+                    <Box
+                        component="main"
+                        sx={{
+                            backgroundColor: (theme) =>
+                                theme.palette.mode === 'light'
+                                    ? theme.palette.grey[100]
+                                    : theme.palette.grey[900],
+                            flexGrow: 1,
+                            height: '100vh',
+                            overflow: 'auto',
+                        }}
+                    >
+                        <Toolbar />
+                        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                            <Grid container spacing={3}>
+                                {/* Chart */}
+                                <Grid item xs={12} md={8} lg={6}>
+                                    <Paper
+                                        sx={{
+                                            p: 2,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            height: 500,
+                                        }}
+                                    >
+                                        {/* <Chart /> */}
+                                        <Title><CreateIcon style={{ cursor: "pointer" }} onClick={
+                                            () => {
+                                                setEdit(true);
+                                            }
+                                        }></CreateIcon>{' '}Profile Details</Title>
+                                        <ProfileDetails userDetails={userDetails} />
 
-                                </Paper>
+                                    </Paper>
+                                </Grid>
+                                {/* Recent Deposits */}
+                                <Grid item xs={12} md={4} lg={6}>
+                                    <Paper
+                                        sx={{
+                                            p: 2,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            height: 500,
+                                        }}
+                                    >
+                                        <SocialConnect userDetails={userDetails} />
+                                    </Paper>
+                                </Grid>
                             </Grid>
-                            {/* Recent Deposits */}
-                            <Grid item xs={12} md={4} lg={6}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 500,
-                                    }}
-                                >
-                                    <SocialConnect userDetails={userDetails} />
-                                </Paper>
-                            </Grid>
-                        </Grid>
-                    </Container>
-                </Box>
+                        </Container>
+                    </Box>}
             </Box>
         </ThemeProvider>
     );
