@@ -32,6 +32,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import TextField from '@mui/material/TextField';
 import Diversity2Icon from '@mui/icons-material/Diversity2';
 import Avatar from '@mui/material/Avatar';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 
 const drawerWidth = 240;
 
@@ -291,9 +293,62 @@ function CreatePost({ currGredDetails, setOpenForm, setCurrGredDetails }) {
     )
 }
 
-function AllPosts({ setOpenForm, currGredDetails }) {
+function AllPosts({ setOpenForm, currGredDetails, setUserDetails }) {
     let reportsArr = new Array(currGredDetails.gred.posts.length).fill(false);
     const [reports, setReports] = useState(reportsArr);
+
+    function handleSave(post) {
+        fetch("http://localhost:4000/posts/save", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                "id": String(post._id),
+            },
+        });
+    }
+
+    function handleFollow(user, setUserDetails) {
+        fetch("http://localhost:4000/users/follow", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                "id": String(user),
+            },
+        })
+            .then(
+                (res) => {
+                    res.json().then(
+                        (body) => {
+                            setUserDetails(body.userDetails);
+                        }
+                    )
+                }
+            )
+    }
+
+    function handleUpvote(post) {
+        fetch("http://localhost:4000/posts/upvote", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                "id": String(post._id),
+            },
+        });
+    }
+
+    function handleDownvote(post) {
+        fetch("http://localhost:4000/posts/downvote", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                "id": String(post._id),
+            },
+        });
+    }
 
     function handleReport(setReports, reports, currGredDetails, post) {
         let postIndex = currGredDetails.gred.posts.indexOf(String(post._id));
@@ -347,8 +402,28 @@ function AllPosts({ setOpenForm, currGredDetails }) {
                                     </Typography>
                                 </CardContent>
                                 <CardContent>
-                                    <Button variant="contained" disabled={false}>FOLLOW</Button>
-                                    <Button variant="contained" disabled={false} style={{ backgroundColor: "red" }} onClick={() => { handleReport(setReports, reports, currGredDetails, post) }}>REPORT</Button>
+                                    <Button variant="contained" disabled={false} onClick={
+                                        (event) => {
+                                            event.preventDefault();
+                                            handleFollow(post.user, setUserDetails);
+                                        }
+                                    }>FOLLOW</Button> <br />
+                                    <Button variant="contained" disabled={false} style={{ backgroundColor: "red" }} onClick={() => { handleReport(setReports, reports, currGredDetails, post) }}>REPORT</Button> <br />
+                                    <Button variant="contained" onClick={
+                                        () => {
+                                            handleSave(post);
+                                        }
+                                    }disabled={false}>SAVE</Button>
+                                    <br /><br />
+                                    <ThumbUpIcon onClick={
+                                        () => {
+                                            handleUpvote(post);
+                                        }
+                                    }/> {post.upvotes.length} <ThumbDownIcon onClick={
+                                        () => {
+                                            handleDownvote(post);
+                                        }
+                                    }/> {post.downvotes.length}
                                 </CardContent>
                             </Card>
                             <Card>
@@ -470,7 +545,7 @@ function Content({ currGredDetails, setCurrGredDetails, setUserDetails }) {
                         </ListItemButton>
                     </List>
                 </Drawer>
-                {openForm === false ? <AllPosts setOpenForm={setOpenForm} currGredDetails={currGredDetails} /> : <CreatePost currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} setOpenForm={setOpenForm} />}
+                {openForm === false ? <AllPosts setOpenForm={setOpenForm} currGredDetails={currGredDetails} setUserDetails={setUserDetails} /> : <CreatePost currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} setOpenForm={setOpenForm} />}
             </Box>
         </ThemeProvider>
     );
