@@ -34,6 +34,8 @@ import Diversity2Icon from '@mui/icons-material/Diversity2';
 import Avatar from '@mui/material/Avatar';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import SaveIcon from '@mui/icons-material/Save';
+
 
 const drawerWidth = 240;
 
@@ -293,7 +295,7 @@ function CreatePost({ currGredDetails, setOpenForm, setCurrGredDetails }) {
     )
 }
 
-function AllPosts({ setOpenForm, currGredDetails, setUserDetails }) {
+function AllPosts({ setOpenForm, currGredDetails, setUserDetails, setCurrGredDetails }) {
     let reportsArr = new Array(currGredDetails.gred.posts.length).fill(false);
     const [reports, setReports] = useState(reportsArr);
 
@@ -322,6 +324,7 @@ function AllPosts({ setOpenForm, currGredDetails, setUserDetails }) {
                     res.json().then(
                         (body) => {
                             setUserDetails(body.userDetails);
+
                         }
                     )
                 }
@@ -335,8 +338,40 @@ function AllPosts({ setOpenForm, currGredDetails, setUserDetails }) {
                 "Content-Type": "application/json",
                 "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
                 "id": String(post._id),
+                "gred": String(currGredDetails.gred._id),
             },
-        });
+        })
+            .then(
+                (res) => {
+                    if (res.ok) {
+                        res.json().then(
+                            (body) => {
+                                setCurrGredDetails({
+                                    ...currGredDetails,
+                                    gred: body.gredObj,
+                                });
+                                let currGredDetails_ = currGredDetails;
+                                for (let i = 0; i < currGredDetails_.postDetails.length; i++) {
+                                    if (String(currGredDetails_.postDetails[i]._id) === String(post._id)) {
+                                        currGredDetails_.postDetails[i].upvotes.push(String(body.user));
+                                        for (let j = 0; j < currGredDetails_.postDetails[i].downvotes.length; j++) {
+                                            if (String(currGredDetails_.postDetails[i].downvotes[j]) === String(body.user)) {
+                                                currGredDetails_.postDetails[i].downvotes.splice(j, 1);
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                                setCurrGredDetails({
+                                    ...currGredDetails,
+                                    postDetails: currGredDetails_.postDetails,
+                                });
+                            }
+                        )
+                    }
+                }
+            );
     }
 
     function handleDownvote(post) {
@@ -345,9 +380,41 @@ function AllPosts({ setOpenForm, currGredDetails, setUserDetails }) {
             headers: {
                 "Content-Type": "application/json",
                 "authorization": "Bearer " + String(localStorage.getItem("refreshToken")),
+                "gred": String(currGredDetails.gred._id),
                 "id": String(post._id),
             },
-        });
+        })
+            .then(
+                (res) => {
+                    if (res.ok) {
+                        res.json().then(
+                            (body) => {
+                                setCurrGredDetails({
+                                    ...currGredDetails,
+                                    gred: body.gredObj,
+                                });
+                                let currGredDetails_ = currGredDetails;
+                                for (let i = 0; i < currGredDetails_.postDetails.length; i++) {
+                                    if (String(currGredDetails_.postDetails[i]._id) === String(post._id)) {
+                                        currGredDetails_.postDetails[i].downvotes.push(String(body.user));
+                                        for (let j = 0; j < currGredDetails_.postDetails[i].upvotes.length; j++) {
+                                            if (String(currGredDetails_.postDetails[i].upvotes[j]) === String(body.user)) {
+                                                currGredDetails_.postDetails[i].upvotes.splice(j, 1);
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                                setCurrGredDetails({
+                                    ...currGredDetails,
+                                    postDetails: currGredDetails_.postDetails,
+                                });
+                            }
+                        )
+                    }
+                }
+            );
     }
 
     function handleReport(setReports, reports, currGredDetails, post) {
@@ -413,17 +480,17 @@ function AllPosts({ setOpenForm, currGredDetails, setUserDetails }) {
                                         () => {
                                             handleSave(post);
                                         }
-                                    }disabled={false}>SAVE</Button>
+                                    } disabled={false}>SAVE</Button>
                                     <br /><br />
                                     <ThumbUpIcon onClick={
                                         () => {
                                             handleUpvote(post);
                                         }
-                                    }/> {post.upvotes.length} <ThumbDownIcon onClick={
+                                    } /> {post.upvotes.length} <ThumbDownIcon onClick={
                                         () => {
                                             handleDownvote(post);
                                         }
-                                    }/> {post.downvotes.length}
+                                    } /> {post.downvotes.length}
                                 </CardContent>
                             </Card>
                             <Card>
@@ -508,8 +575,6 @@ function Content({ currGredDetails, setCurrGredDetails, setUserDetails }) {
                     {/* these are the items displayed on the toolbar */}
                     <Divider />
                     <List component="nav">
-
-
                         <ListItemButton onClick={() => {
                             navigate("/profile");
                         }}>
@@ -526,26 +591,41 @@ function Content({ currGredDetails, setCurrGredDetails, setUserDetails }) {
                             </ListItemIcon>
                             <ListItemText primary="My Sub-GREDDITS" />
                         </ListItemButton>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/allgreds");
+                        }}>
                             <ListItemIcon>
                                 <PeopleIcon />
                             </ListItemIcon>
                             <ListItemText primary="All Sub-GREDDITS" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
+                            navigate("/saved");
+                        }}>
+                            <ListItemIcon>
+                                <SaveIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Saved Posts" />
+                        </ListItemButton>
+                        <ListItemButton onClick={() => {
                             localStorage.removeItem("refreshToken");
                             setUserDetails(false);
+                            console.log("here");
                             navigate("/");
-                        }
-                        }>
+                        }}>
                             <ListItemIcon>
                                 <LogoutIcon />
                             </ListItemIcon>
                             <ListItemText primary="LOGOUT" />
                         </ListItemButton>
+
+
+
+                        {/* <Divider sx={{ my: 1 }} />
+                        {secondaryListItems} */}
                     </List>
                 </Drawer>
-                {openForm === false ? <AllPosts setOpenForm={setOpenForm} currGredDetails={currGredDetails} setUserDetails={setUserDetails} /> : <CreatePost currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} setOpenForm={setOpenForm} />}
+                {openForm === false ? <AllPosts setOpenForm={setOpenForm} currGredDetails={currGredDetails} setUserDetails={setUserDetails} setCurrGredDetails={setCurrGredDetails} /> : <CreatePost currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} setOpenForm={setOpenForm} />}
             </Box>
         </ThemeProvider>
     );

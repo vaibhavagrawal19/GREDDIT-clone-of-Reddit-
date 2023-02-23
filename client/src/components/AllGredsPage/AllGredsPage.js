@@ -22,6 +22,9 @@ import { useNavigate, Navigate } from 'react-router';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GredsLoader from './GredsLoader/GredsLoader';
+import { Checkbox } from '@mui/material';
+import { FormGroup, FormControlLabel } from '@mui/material';
+import SaveIcon from '@mui/icons-material/Save';
 
 
 function Copyright(props) {
@@ -151,8 +154,6 @@ function Content({ userDetails, setUserDetails, allGreds, setAllGreds, setCurrGr
                     {/* these are the items displayed on the toolbar */}
                     <Divider />
                     <List component="nav">
-
-
                         <ListItemButton onClick={() => {
                             navigate("/profile");
                         }}>
@@ -169,25 +170,64 @@ function Content({ userDetails, setUserDetails, allGreds, setAllGreds, setCurrGr
                             </ListItemIcon>
                             <ListItemText primary="My Sub-GREDDITS" />
                         </ListItemButton>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/allgreds");
+                        }}>
                             <ListItemIcon>
                                 <PeopleIcon />
                             </ListItemIcon>
                             <ListItemText primary="All Sub-GREDDITS" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
+                            navigate("/saved");
+                        }}>
+                            <ListItemIcon>
+                                <SaveIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Saved Posts" />
+                        </ListItemButton>
+                        <ListItemButton onClick={() => {
                             localStorage.removeItem("refreshToken");
                             setUserDetails(false);
-                            setUserDetails(false);
+                            console.log("here");
                             navigate("/");
-                        }
-                        }>
+                        }}>
                             <ListItemIcon>
                                 <LogoutIcon />
                             </ListItemIcon>
                             <ListItemText primary="LOGOUT" />
                         </ListItemButton>
+
+
+
+                        {/* <Divider sx={{ my: 1 }} />
+                        {secondaryListItems} */}
                     </List>
+                </Drawer>
+
+                <Drawer variant="permanent" open={open}>
+
+                    {/* this is the toggle button for the drawer */}
+                    <Toolbar
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'flex-end',
+                            px: [1],
+                        }}
+                    >
+                        <IconButton onClick={toggleDrawer}>
+                            <ChevronLeftIcon />
+                        </IconButton>
+                    </Toolbar>
+
+
+                    {/* these are the items displayed on the toolbar */}
+                    <Divider />
+                    <FormGroup>
+                        <FormControlLabel control={<Checkbox />} label="Label" />
+                        <FormControlLabel control={<Checkbox />} label="Disabled" />
+                    </FormGroup>
                 </Drawer>
 
 
