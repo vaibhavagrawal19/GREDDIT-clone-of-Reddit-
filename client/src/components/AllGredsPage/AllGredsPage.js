@@ -25,20 +25,10 @@ import GredsLoader from './GredsLoader/GredsLoader';
 import { Checkbox } from '@mui/material';
 import { FormGroup, FormControlLabel } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
+import { ListItem } from '@mui/material';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import ReportIcon from '@mui/icons-material/Report';
 
-
-function Copyright(props) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit">
-                GREDDIIT
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
 
 const drawerWidth = 240;
 
@@ -88,7 +78,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
-function Content({ userDetails, setUserDetails, allGreds, setAllGreds, setCurrGredDetails }) {
+function Content({ userDetails, setUserDetails, allGreds, setAllGreds, setCurrGredDetails, currGredDetails }) {
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
     const [openForm, setOpenForm] = React.useState(false);
@@ -199,9 +189,8 @@ function Content({ userDetails, setUserDetails, allGreds, setAllGreds, setCurrGr
                         </ListItemButton>
 
 
+                        <Divider sx={{ my: 1 }} />
 
-                        {/* <Divider sx={{ my: 1 }} />
-                        {secondaryListItems} */}
                     </List>
                 </Drawer>
 
@@ -237,14 +226,14 @@ function Content({ userDetails, setUserDetails, allGreds, setAllGreds, setCurrGr
     );
 }
 
-export default function AllGredsPage({ userDetails, setUserDetails, myGredDetails, setMyGredDetails, setCurrGredDetails }) {
+export default function AllGredsPage({ userDetails, setUserDetails, setCurrGredDetails, currGredDetails }) {
     const [allGreds, setAllGreds] = useState(false);
     const navigate = useNavigate();
     if (!localStorage.getItem("refreshToken")) {
         return <Navigate to="/" />;
     }
     if (userDetails && allGreds) {
-        return <Content userDetails={userDetails} setUserDetails={setUserDetails} allGreds={allGreds} setAllGreds={setAllGreds} setCurrGredDetails={setCurrGredDetails} />;
+        return <Content userDetails={userDetails} setUserDetails={setUserDetails} allGreds={allGreds} setAllGreds={setAllGreds} setCurrGredDetails={setCurrGredDetails} currGredDetails={currGredDetails} />;
     }
     else if (userDetails) {
         fetch("http://localhost:4000/greds/list", {

@@ -28,6 +28,10 @@ import { Button } from "@mui/material";
 import CreatePost from './createPost';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import { ListItem } from '@mui/material';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import LogoutIcon from '@mui/icons-material/Logout';
+import SaveIcon from '@mui/icons-material/Save';
 
 const drawerWidth = 240;
 
@@ -77,7 +81,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
-function Content({ currGredDetails, setCurrGredDetails }) {
+function Content({ currGredDetails, setCurrGredDetails, setUserDetails }) {
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
@@ -218,42 +222,89 @@ function Content({ currGredDetails, setCurrGredDetails }) {
                     {/* these are the items displayed on the toolbar */}
                     <Divider />
                     <List component="nav">
-
-
                         <ListItemButton onClick={() => {
-                            navigate("/mygreds/gred/users");
+                            navigate("/profile");
+                        }}>
+                            <ListItemIcon>
+                                <DashboardIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Profile" />
+                        </ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/mygreds");
+                        }}>
+                            <ListItemIcon>
+                                <AssignmentIndIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="My Sub-GREDDITS" />
+                        </ListItemButton>
+                        <ListItemButton onClick={() => {
+                            navigate("/allgreds");
                         }}>
                             <ListItemIcon>
                                 <PeopleIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Users" />
-                        </ListItemButton>
-                        <ListItemButton>
-                            <ListItemIcon>
-                                <AssignmentIndIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Joining Requests" />
-                        </ListItemButton>
-                        <ListItemButton>
-                            <ListItemIcon>
-                                <BarChartIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Stats" />
+                            <ListItemText primary="All Sub-GREDDITS" />
                         </ListItemButton>
                         <ListItemButton onClick={() => {
-                            navigate("/mygreds/gred/reports");
-                        }
-                        }>
+                            navigate("/saved");
+                        }}>
                             <ListItemIcon>
-                                <ReportIcon />
+                                <SaveIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Reported" />
+                            <ListItemText primary="Saved Posts" />
+                        </ListItemButton>
+                        <ListItemButton onClick={() => {
+                            localStorage.removeItem("refreshToken");
+                            setUserDetails(false);
+                            console.log("here");
+                            navigate("/");
+                        }}>
+                            <ListItemIcon>
+                                <LogoutIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="LOGOUT" />
                         </ListItemButton>
 
 
+                        <Divider sx={{ my: 1 }} />
 
-                        {/* <Divider sx={{ my: 1 }} />
-                        {secondaryListItems} */}
+                        {currGredDetails && <div>
+                            <ListItem style={{ cursor: "default", color: "black" }}>
+                                <ListItemText primary={currGredDetails.gred.title} />
+                            </ListItem>
+                            <ListItemButton onClick={() => {
+                                navigate("/mygreds/gred/users");
+                            }}>
+                                <ListItemIcon>
+                                    <PeopleIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Users" />
+                            </ListItemButton>
+                            <ListItemButton>
+                                <ListItemIcon>
+                                    <AssignmentIndIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Joining Requests" />
+                            </ListItemButton>
+                            <ListItemButton>
+                                <ListItemIcon>
+                                    <BarChartIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Stats" />
+                            </ListItemButton>
+                            <ListItemButton onClick={() => {
+                                navigate("/mygreds/gred/reports");
+                            }
+                            }>
+                                <ListItemIcon>
+                                    <ReportIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Reported" />
+                            </ListItemButton>
+
+                        </div>}
+
                     </List>
                 </Drawer>
                 <Box
@@ -300,13 +351,13 @@ function Content({ currGredDetails, setCurrGredDetails }) {
     );
 }
 
-export default function Joining({ currGredDetails, setCurrGredDetails }) {
+export default function Joining({ currGredDetails, setCurrGredDetails, setUserDetails }) {
     if (!currGredDetails) {
         return <Navigate to="/" />;
     }
 
     if (currGredDetails.pendingUserdata || currGredDetails.gred.pendingUsers.length === 0) {
-        return <Content currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} />
+        return <Content currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} steUserDetails={setUserDetails} />
     }
 
     let pendingUserdata = new Array(currGredDetails.gred.pendingUsers.length);

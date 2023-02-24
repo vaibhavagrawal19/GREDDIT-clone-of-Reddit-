@@ -95,13 +95,98 @@ const createNewUser = asyncHandler(async (req, res) => {
     return res.status(201).json({ message: "New user with username " + username + " created successfully!" });
 });
 
+const fetchFollowerNames = asyncHandler(async (req, res) => {
+    const user = req.user;
+
+    const userObj = await User.findById(String(user)).lean().exec();
+
+    const namesList = new Array(userObj.followers.length);
+    for (let i = 0; i < userObj.followers.length; i++)
+    {
+        const followerObj = await User.findById(String(userObj.followers[i])).lean().exec();
+        namesList[i] = followerObj.username;
+    }
+    return res.status(200).json({ list: namesList });
+});
+
+const fetchFollowingNames = asyncHandler(async (req, res) => {
+    const user = req.user;
+
+    const userObj = await User.findById(String(user)).lean().exec();
+
+    const namesList = new Array(userObj.following.length);
+    for (let i = 0; i < userObj.following.length; i++)
+    {
+        const followerObj = await User.findById(String(userObj.following[i])).lean().exec();
+        namesList[i] = followerObj.username;
+    }
+
+    return res.status(200).json({ list: namesList });
+});
+
+const unfollow = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const username = req.get("username");
+
+    const follower = await User.findById(String(user)).exec();
+    const following = await User.findOne({ username }).exec();
+
+    for (let i = 0; i < follower.following.length; i++) {
+        if (String(follower.following[i]) === String(following._id)) {
+            console.log("here1");
+            follower.following.splice(i, 1);
+            break;
+        }
+    }
+
+    for (let i = 0; i < following.followers.length; i++) {
+        if (String(following.followers[i]) === String(user)) {
+            console.log("here2");
+            following.followers.splice(i, 1);
+            break;
+        }
+    }
+
+    await follower.save();
+    await following.save();
+
+    return res.status(200).json({ follower });
+});
+
+const removeFollower = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const username = req.get("username");
+
+    const me = await User.findById(String(user)).exec();
+    const follower = await User.findOne({ username }).exec();
+
+    for (let i = 0; i < me.followers.length; i++) {
+        if (String(me.followers[i]) === String(follower._id)) {
+            // console.log("here1");
+            me.followers.splice(i, 1);
+            break;
+        }
+    }
+
+    for (let i = 0; i < follower.following.length; i++) {
+        if (String(follower.following[i]) === String(user)) {
+            // console.log("here2");
+            follower.following.splice(i, 1);
+            break;
+        }
+    }
+
+    await me.save();
+    await follower.save();
+
+    return res.status(200).json({ me });
+});
+
 const updateUser = asyncHandler(async (req, res) => {
     const { username, firstname, lastname, age } = req.body;
-    console.log(req.body);
 
     // obtain the user object with the given id, along with the edit routines (hence not using lean)
     const user = await User.findById(String(req.user)).exec();
-    console.log(user.username);
     if (!user) {
         return res.status(404).json({ message: "NoUser" });
     }
@@ -174,4 +259,8 @@ module.exports = {
     getOneUser,
     follow,
     getSaved,
+    fetchFollowerNames,
+    fetchFollowingNames,
+    unfollow,
+    removeFollower,
 };

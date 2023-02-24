@@ -24,6 +24,9 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import GredsLoader from './GredsLoader/GredsLoader';
 import CreateGred from './CreateGred';
 import SaveIcon from '@mui/icons-material/Save';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import ReportIcon from '@mui/icons-material/Report';
+import { ListItem } from '@mui/material';
 
 const drawerWidth = 240;
 
@@ -73,7 +76,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
-function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails, setCurrGredDetails }) {
+function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails, setCurrGredDetails, currGredDetails }) {
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
     const [openForm, setOpenForm] = React.useState(false);
@@ -184,9 +187,8 @@ function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails,
                         </ListItemButton>
 
 
+                        <Divider sx={{ my: 1 }} />
 
-                        {/* <Divider sx={{ my: 1 }} />
-                        {secondaryListItems} */}
                     </List>
                 </Drawer>
 
@@ -198,13 +200,13 @@ function Content({ userDetails, setUserDetails, myGredDetails, setMyGredDetails,
     );
 }
 
-export default function GredsPage({ userDetails, setUserDetails, myGredDetails, setMyGredDetails, setCurrGredDetails }) {
+export default function GredsPage({ userDetails, setUserDetails, myGredDetails, setMyGredDetails, setCurrGredDetails, currGredDetails }) {
     const navigate = useNavigate();
     if (!localStorage.getItem("refreshToken")) {
         return <Navigate to="/" />;
     }
     if (userDetails && myGredDetails) {
-        return <Content userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} />;
+        return <Content userDetails={userDetails} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} currGredDetails={currGredDetails} />;
     }
     else if (userDetails) {
         fetch("http://localhost:4000/greds/list", {
@@ -223,7 +225,7 @@ export default function GredsPage({ userDetails, setUserDetails, myGredDetails, 
                                 body = body.gredsList;
                                 console.log(body);
                                 setMyGredDetails(body);
-                                return <Content userDetails={userDetails.gredsList} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} />;
+                                // return <Content userDetails={userDetails.gredsList} setUserDetails={setUserDetails} myGredDetails={myGredDetails} setMyGredDetails={setMyGredDetails} setCurrGredDetails={setCurrGredDetails} />;
                             });
                     }
                     else {

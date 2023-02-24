@@ -12,8 +12,6 @@ import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import LogoutIcon from '@mui/icons-material/Logout';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import PeopleIcon from '@mui/icons-material/People';
 import Container from '@mui/material/Container';
@@ -27,14 +25,18 @@ import ProfileDetails from './ProfileDetails';
 import SocialConnect from './SocialConnect';
 import TextField from '@mui/material/TextField';
 import { Navigate, useNavigate } from "react-router-dom";
-import SaveIcon from '@mui/icons-material/Save';
 import Title from './Title';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 import CreateIcon from '@mui/icons-material/Create';
-
+import BarChartIcon from '@mui/icons-material/BarChart';
+import ReportIcon from '@mui/icons-material/Report';
+import { ListItem } from '@mui/material';
 import { useState } from "react";
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import LogoutIcon from '@mui/icons-material/Logout';
+import SaveIcon from '@mui/icons-material/Save';
+
 
 const drawerWidth = 240;
 
@@ -125,7 +127,7 @@ function EditDetails({ setEdit, setUserDetails }) {
                     if (res.ok) {
                         res.json().then(
                             (body) => {
-                                setEdit(false); 
+                                setEdit(false);
                                 setUserDetails(body.updatedUser);
                             }
                         )
@@ -254,7 +256,7 @@ function EditDetails({ setEdit, setUserDetails }) {
 
 const mdTheme = createTheme();
 
-function DashboardContent({ userDetails, setUserDetails }) {
+function DashboardContent({ userDetails, setUserDetails, currGredDetails, setCurrGredDetails }) {
     const [edit, setEdit] = useState(false);
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
@@ -363,9 +365,7 @@ function DashboardContent({ userDetails, setUserDetails }) {
                         </ListItemButton>
 
 
-
-                        {/* <Divider sx={{ my: 1 }} />
-                        {secondaryListItems} */}
+                        <Divider sx={{ my: 1 }} />
                     </List>
                 </Drawer>
                 {edit === true ? <EditDetails setEdit={setEdit} setUserDetails={setUserDetails} /> :
@@ -400,7 +400,7 @@ function DashboardContent({ userDetails, setUserDetails }) {
                                                 setEdit(true);
                                             }
                                         }></CreateIcon>{' '}Profile Details</Title>
-                                        <ProfileDetails userDetails={userDetails} />
+                                        <ProfileDetails userDetails={userDetails} setUserDetails={setUserDetails} />
 
                                     </Paper>
                                 </Grid>
@@ -414,7 +414,7 @@ function DashboardContent({ userDetails, setUserDetails }) {
                                             height: 500,
                                         }}
                                     >
-                                        <SocialConnect userDetails={userDetails} />
+                                        <SocialConnect userDetails={userDetails} setUserDetails={setUserDetails} />
                                     </Paper>
                                 </Grid>
                             </Grid>
@@ -425,7 +425,7 @@ function DashboardContent({ userDetails, setUserDetails }) {
     );
 }
 
-export default function Dashboard({ userDetails, setUserDetails }) {
+export default function Dashboard({ userDetails, setUserDetails, currGredDetails, setCurrGredDetails }) {
     if (!localStorage.getItem("refreshToken")) {
         setUserDetails(false);
         return <Navigate to="/" />;

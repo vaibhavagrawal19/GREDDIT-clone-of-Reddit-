@@ -35,6 +35,7 @@ import Avatar from '@mui/material/Avatar';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import SaveIcon from '@mui/icons-material/Save';
+import { ListItem } from '@mui/material';
 
 const drawerWidth = 240;
 
@@ -148,6 +149,7 @@ function AllPosts({ savedPosts, setSavedPosts, userDetails, setUserDetails }) {
     // const [reports, setReports] = useState(reportsArr);
 
     function handleUnSave(post) {
+        console.log("here");
         fetch("http://localhost:4000/posts/save", {
             method: "DELETE",
             headers: {
@@ -159,9 +161,9 @@ function AllPosts({ savedPosts, setSavedPosts, userDetails, setUserDetails }) {
             .then(
                 (res) => {
                     if (res.ok) {
-                        let savedPosts_ = savedPosts;
-                        for (let i = 0; i < savedPosts.length; i++) {
-                            if (String(savedPosts_[i]._id) === post) {
+                        let savedPosts_ = [...savedPosts]
+                        for (let i = 0; i < savedPosts_.length; i++) {
+                            if (String(savedPosts_[i]._id) === String(post._id)) {
                                 savedPosts_.splice(i, 1);
                                 break;
                             }
@@ -299,7 +301,7 @@ function AllPosts({ savedPosts, setSavedPosts, userDetails, setUserDetails }) {
 
 const mdTheme = createTheme();
 
-function Content({ savedPosts, setSavedPosts, userDetails, setUserDetails }) {
+function Content({ savedPosts, setSavedPosts, userDetails, setUserDetails, currGredDetails }) {
     console.log(savedPosts);
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(true);
@@ -407,6 +409,9 @@ function Content({ savedPosts, setSavedPosts, userDetails, setUserDetails }) {
                             </ListItemIcon>
                             <ListItemText primary="LOGOUT" />
                         </ListItemButton>
+
+
+                        <Divider sx={{ my: 1 }} />
                     </List>
                 </Drawer>
                 <AllPosts savedPosts={savedPosts} setSavedPosts={setSavedPosts} userDetails={userDetails} setUserDetails={setUserDetails} />
@@ -415,7 +420,7 @@ function Content({ savedPosts, setSavedPosts, userDetails, setUserDetails }) {
     );
 }
 
-export default function SavedPosts({ userDetails, setUserDetails }) {
+export default function SavedPosts({ userDetails, setUserDetails, currGredDetails }) {
     const [savedPosts, setSavedPosts] = useState(false);
     if (savedPosts) {
         return <Content savedPosts={savedPosts} setSavedPosts={setSavedPosts} userDetails={userDetails} setUserDetails={setUserDetails} />

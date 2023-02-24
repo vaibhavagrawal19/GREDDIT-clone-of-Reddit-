@@ -35,6 +35,7 @@ import Avatar from '@mui/material/Avatar';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import SaveIcon from '@mui/icons-material/Save';
+import { ListItem } from '@mui/material';
 
 
 const drawerWidth = 240;
@@ -574,9 +575,7 @@ function Content({ currGredDetails, setCurrGredDetails, setUserDetails }) {
                     {/* these are the items displayed on the toolbar */}
                     <Divider />
                     <List component="nav">
-                        <ListItemButton onClick={() => {
-                            navigate("/profile");
-                        }}>
+                        <ListItemButton>
                             <ListItemIcon>
                                 <DashboardIcon />
                             </ListItemIcon>
@@ -619,9 +618,8 @@ function Content({ currGredDetails, setCurrGredDetails, setUserDetails }) {
                         </ListItemButton>
 
 
+                        <Divider sx={{ my: 1 }} />
 
-                        {/* <Divider sx={{ my: 1 }} />
-                        {secondaryListItems} */}
                     </List>
                 </Drawer>
                 {openForm === false ? <AllPosts setOpenForm={setOpenForm} currGredDetails={currGredDetails} setUserDetails={setUserDetails} setCurrGredDetails={setCurrGredDetails} /> : <CreatePost currGredDetails={currGredDetails} setCurrGredDetails={setCurrGredDetails} setOpenForm={setOpenForm} />}
